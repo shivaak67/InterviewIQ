@@ -9,7 +9,7 @@ AI-powered technical interview preparation platform. Upload a resume and job des
 | Frontend | React, TypeScript, Vite, Tailwind   |
 | Backend  | FastAPI, SQLAlchemy, Alembic        |
 | Database | PostgreSQL                          |
-| Auth     | JWT (planned)                       |
+| Auth     | JWT                                 |
 | AI       | OpenAI API (planned)                |
 
 ## Prerequisites
@@ -160,12 +160,23 @@ Terminal 3:  npm run dev                   (frontend/)
 | `POSTGRES_PASSWORD` | PostgreSQL password                  |
 | `POSTGRES_DB`       | Database name                        |
 | `DATABASE_URL`      | SQLAlchemy connection string         |
+| `JWT_SECRET_KEY`    | Secret key for signing JWT tokens    |
+| `JWT_ALGORITHM`     | JWT algorithm (default: `HS256`)     |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Token lifetime in minutes  |
 
 ### Frontend `.env`
 
 | Variable         | Description              |
 | ---------------- | ------------------------ |
 | `VITE_API_URL`   | Backend URL (e.g. `http://localhost:8000`) |
+
+## Auth Endpoints
+
+| Method | Endpoint          | Description                    |
+| ------ | ----------------- | ------------------------------ |
+| POST   | `/auth/register`  | Create a new user account      |
+| POST   | `/auth/login`     | Login and receive a JWT token  |
+| GET    | `/auth/me`        | Get current user (requires JWT)|
 
 ## Troubleshooting
 
