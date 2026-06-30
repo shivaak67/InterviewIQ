@@ -2,8 +2,8 @@ import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
-export default function LoginPage() {
-  const { login } = useAuth();
+export default function RegisterPage() {
+  const { register } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,10 +16,10 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      await login(email, password);
+      await register(email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -27,8 +27,8 @@ export default function LoginPage() {
 
   return (
     <main className="mx-auto max-w-md p-8">
-      <h1 className="text-2xl font-bold">Login</h1>
-      <p className="mt-2 text-gray-600">Sign in to your InterviewIQ account</p>
+      <h1 className="text-2xl font-bold">Register</h1>
+      <p className="mt-2 text-gray-600">Create your InterviewIQ account</p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
@@ -53,10 +53,12 @@ export default function LoginPage() {
             id="password"
             type="password"
             required
+            minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
           />
+          <p className="mt-1 text-xs text-gray-500">At least 8 characters</p>
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
@@ -66,14 +68,14 @@ export default function LoginPage() {
           disabled={isSubmitting}
           className="w-full rounded bg-black px-4 py-2 text-white disabled:opacity-50"
         >
-          {isSubmitting ? "Signing in..." : "Sign in"}
+          {isSubmitting ? "Creating account..." : "Create account"}
         </button>
       </form>
 
       <p className="mt-4 text-sm text-gray-600">
-        Don&apos;t have an account?{" "}
-        <Link to="/register" className="font-medium text-black underline">
-          Register
+        Already have an account?{" "}
+        <Link to="/login" className="font-medium text-black underline">
+          Login
         </Link>
       </p>
     </main>
