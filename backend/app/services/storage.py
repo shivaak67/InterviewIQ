@@ -15,3 +15,10 @@ def save_resume_file(user_id: int, filename: str, content: bytes) -> str:
     file_path.write_bytes(content)
 
     return str(file_path.relative_to(ROOT_DIR)).replace("\\", "/")
+
+
+def delete_resume_file(file_path: str) -> None:
+    full_path = ROOT_DIR / file_path
+    if full_path.is_file():
+        full_path.unlink()
+

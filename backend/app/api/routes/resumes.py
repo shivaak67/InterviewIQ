@@ -7,7 +7,7 @@ from app.models.resume import Resume
 from app.models.user import User
 from app.schemas.resume import ResumeResponse
 from app.services.pdf_extractor import extract_text_from_pdf
-from app.services.storage import save_resume_file
+from app.services.storage import delete_resume_file, save_resume_file
 
 router = APIRouter(prefix="/resumes", tags=["resumes"])
 
@@ -76,3 +76,26 @@ def list_resumes(
         .order_by(Resume.created_at.desc())
         .all()
     )
+
+
+@router.delete("/{resume_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_resume(
+    resume_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    resume = (
+        db.query(Resume)
+        .filter(Resume.id == resume_id, Resume.user_id == current_user.id)
+        .first()
+    )
+    if resume is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Resume not found",
+        )
+
+    delete_resume_file(resume.file_path)
+    db.delete(resume)
+    db.commit()
+
