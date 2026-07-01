@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
+    upload_dir: str = "uploads/resumes"
 
 
 settings = Settings()  # type: ignore[call-arg]
