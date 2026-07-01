@@ -39,12 +39,20 @@ export default function ResumeUpload() {
       </p>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-        <input
-          type="file"
-          accept=".pdf,application/pdf"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="block w-full text-sm"
-        />
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="inline-flex cursor-pointer items-center rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-black transition hover:border-gray-400 hover:bg-gray-100">
+            Choose file
+            <input
+              type="file"
+              accept=".pdf,application/pdf"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className="hidden"
+            />
+          </label>
+          <span className="text-sm text-gray-600">
+            {file ? file.name : "No file chosen"}
+          </span>
+        </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
