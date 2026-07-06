@@ -22,3 +22,4 @@ class JobDescription(Base):
     )
 
     user = relationship("User", back_populates="job_descriptions")
+    interview_sessions = relationship("InterviewSession", back_populates="job_description")
