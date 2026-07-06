@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import JobDescriptionForm from "../components/job-description/JobDescriptionForm";
+import JobDescriptionList from "../components/job-description/JobDescriptionList";
 import ResumeList from "../components/resume/ResumeList";
 import ResumeUpload from "../components/resume/ResumeUpload";
 import { useAuth } from "../contexts/AuthContext";
@@ -24,6 +26,8 @@ export default function DashboardPage() {
 
       <ResumeUpload />
       <ResumeList />
+      <JobDescriptionForm />
+      <JobDescriptionList />
 
       <Link to="/" className="mt-8 inline-block text-sm underline">
         Back to home
