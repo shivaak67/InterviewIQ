@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import InterviewGenerator from "../components/interview/InterviewGenerator";
+import InterviewSessionList from "../components/interview/InterviewSessionList";
 import JobDescriptionForm from "../components/job-description/JobDescriptionForm";
 import JobDescriptionList from "../components/job-description/JobDescriptionList";
 import ResumeList from "../components/resume/ResumeList";
@@ -28,6 +30,8 @@ export default function DashboardPage() {
       <ResumeList />
       <JobDescriptionForm />
       <JobDescriptionList />
+      <InterviewGenerator />
+      <InterviewSessionList />
 
       <Link to="/" className="mt-8 inline-block text-sm underline">
         Back to home
