@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     upload_dir: str = "uploads/resumes"
+    openai_api_key: str | None = None
+    openai_model: str = "gpt-4o-mini"
 
 
 settings = Settings()  # type: ignore[call-arg]

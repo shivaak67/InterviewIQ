@@ -10,3 +10,4 @@ python-jose[cryptography]
 email-validator
 pypdf
 python-multipart
+openai

@@ -27,6 +27,18 @@ class GeneratedQuestionResponse(BaseModel):
     order_index: int
 
 
+class InterviewSessionSummaryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    user_id: int
+    resume_id: int
+    job_description_id: int
+    status: str
+    created_at: datetime
+    question_count: int = 0
+
+
 class InterviewSessionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
