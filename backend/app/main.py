@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, resumes
+from app.api.routes import auth, job_descriptions, resumes
 
 app = FastAPI(title="InterviewIQ API")
 
@@ -15,6 +15,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(resumes.router)
+app.include_router(job_descriptions.router)
 
 
 @app.get("/health")
