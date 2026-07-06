@@ -1,3 +1,15 @@
-from app.models import job_description, resume, user
+from app.models import (
+    generated_question,
+    interview_session,
+    job_description,
+    resume,
+    user,
+)
 
-__all__ = ["job_description", "resume", "user"]
+__all__ = [
+    "generated_question",
+    "interview_session",
+    "job_description",
+    "resume",
+    "user",
+]
