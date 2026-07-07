@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import DashboardSection from "../components/dashboard/DashboardSection";
 import InterviewGenerator from "../components/interview/InterviewGenerator";
 import InterviewSessionList from "../components/interview/InterviewSessionList";
 import JobDescriptionForm from "../components/job-description/JobDescriptionForm";
@@ -13,7 +14,13 @@ export default function DashboardPage() {
   return (
     <main className="mx-auto max-w-2xl p-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Welcome back,{" "}
+            <span className="font-medium text-black">{user?.email}</span>
+          </p>
+        </div>
         <button
           type="button"
           onClick={logout}
@@ -22,18 +29,26 @@ export default function DashboardPage() {
           Logout
         </button>
       </div>
-      <p className="mt-4 text-gray-600">
-        Welcome, <span className="font-medium text-black">{user?.email}</span>
-      </p>
 
-      <ResumeUpload />
-      <ResumeList />
-      <JobDescriptionForm />
-      <JobDescriptionList />
-      <InterviewGenerator />
-      <InterviewSessionList />
+      <DashboardSection
+        title="Interview prep"
+        description="Upload your resume and save job descriptions you'll practice against."
+      >
+        <ResumeUpload />
+        <ResumeList />
+        <JobDescriptionForm />
+        <JobDescriptionList />
+      </DashboardSection>
 
-      <Link to="/" className="mt-8 inline-block text-sm underline">
+      <DashboardSection
+        title="Your interviews"
+        description="Generate personalized questions and track your answer progress."
+      >
+        <InterviewGenerator />
+        <InterviewSessionList />
+      </DashboardSection>
+
+      <Link to="/" className="mt-10 inline-block text-sm underline">
         Back to home
       </Link>
     </main>

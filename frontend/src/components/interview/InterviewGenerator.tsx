@@ -1,20 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { fetchJobDescriptions } from "../../api/jobDescriptions";
 import { generateInterview } from "../../api/interviews";
 import { fetchResumes } from "../../api/resumes";
 import type { InterviewSession } from "../../types/interview";
-import QuestionWithAnswer from "./QuestionWithAnswer";
-
-function QuestionList({ session }: { session: InterviewSession }) {
-  return (
-    <ol className="mt-4 list-decimal space-y-3 pl-5">
-      {session.questions.map((question) => (
-        <QuestionWithAnswer key={question.id} question={question} />
-      ))}
-    </ol>
-  );
-}
+import SessionProgress from "./SessionProgress";
 
 export default function InterviewGenerator() {
   const queryClient = useQueryClient();
@@ -132,12 +123,24 @@ export default function InterviewGenerator() {
       )}
 
       {latestSession && (
-        <div className="mt-6 rounded border border-gray-100 bg-gray-50 p-4">
-          <h3 className="font-medium">Generated questions</h3>
-          <p className="mt-1 text-xs text-gray-500">
-            Session created {new Date(latestSession.created_at).toLocaleString()}
+        <div className="mt-6 rounded border border-gray-200 bg-white p-4 shadow-sm">
+          <p className="font-medium text-gray-900">Interview ready</p>
+          <p className="mt-1 text-sm text-gray-700">{latestSession.resume_filename}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-gray-600">
+            {latestSession.job_description_preview}
           </p>
-          <QuestionList session={latestSession} />
+          <div className="mt-3">
+            <SessionProgress
+              answerCount={latestSession.answer_count}
+              questionCount={latestSession.question_count}
+            />
+          </div>
+          <Link
+            to={`/dashboard/sessions/${latestSession.id}`}
+            className="mt-4 inline-block rounded bg-black px-4 py-2 text-sm text-white transition hover:bg-gray-800"
+          >
+            View session
+          </Link>
         </div>
       )}
     </section>

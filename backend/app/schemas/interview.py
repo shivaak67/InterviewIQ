@@ -37,6 +37,9 @@ class InterviewSessionSummaryResponse(BaseModel):
     status: str
     created_at: datetime
     question_count: int = 0
+    answer_count: int = 0
+    resume_filename: str = ""
+    job_description_preview: str = ""
 
 
 class InterviewSessionResponse(BaseModel):
@@ -48,4 +51,8 @@ class InterviewSessionResponse(BaseModel):
     job_description_id: int
     status: str
     created_at: datetime
+    question_count: int = 0
+    answer_count: int = 0
+    resume_filename: str = ""
+    job_description_preview: str = ""
     questions: list[GeneratedQuestionResponse] = Field(default_factory=list)
