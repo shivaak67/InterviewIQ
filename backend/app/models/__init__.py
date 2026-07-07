@@ -3,6 +3,7 @@ from app.models import (
     interview_session,
     job_description,
     resume,
+    suggested_answer,
     user,
 )
 
@@ -11,5 +12,6 @@ __all__ = [
     "interview_session",
     "job_description",
     "resume",
+    "suggested_answer",
     "user",
 ]
