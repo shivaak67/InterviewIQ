@@ -5,7 +5,7 @@ import { fetchJobDescriptions } from "../../api/jobDescriptions";
 import { generateInterview } from "../../api/interviews";
 import { fetchResumes } from "../../api/resumes";
 import type { InterviewSession } from "../../types/interview";
-import InterviewSessionDetail from "./InterviewSessionDetail";
+import SessionProgress from "./SessionProgress";
 
 export default function InterviewGenerator() {
   const queryClient = useQueryClient();
@@ -123,17 +123,24 @@ export default function InterviewGenerator() {
       )}
 
       {latestSession && (
-        <div className="mt-6 rounded border border-gray-100 bg-gray-50 p-4">
-          <div className="flex items-center justify-between gap-4">
-            <h3 className="font-medium">Generated questions</h3>
-            <Link
-              to={`/dashboard/sessions/${latestSession.id}`}
-              className="text-xs underline"
-            >
-              Open full session
-            </Link>
+        <div className="mt-6 rounded border border-gray-200 bg-white p-4 shadow-sm">
+          <p className="font-medium text-gray-900">Interview ready</p>
+          <p className="mt-1 text-sm text-gray-700">{latestSession.resume_filename}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-gray-600">
+            {latestSession.job_description_preview}
+          </p>
+          <div className="mt-3">
+            <SessionProgress
+              answerCount={latestSession.answer_count}
+              questionCount={latestSession.question_count}
+            />
           </div>
-          <InterviewSessionDetail session={latestSession} />
+          <Link
+            to={`/dashboard/sessions/${latestSession.id}`}
+            className="mt-4 inline-block rounded bg-black px-4 py-2 text-sm text-white transition hover:bg-gray-800"
+          >
+            View session
+          </Link>
         </div>
       )}
     </section>
