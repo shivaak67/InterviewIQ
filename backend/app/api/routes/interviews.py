@@ -138,3 +138,18 @@ def get_interview(
             detail="Interview session not found",
         )
     return to_session_response(session)
+
+
+@router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
+def clear_interviews(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    sessions = (
+        db.query(InterviewSession)
+        .filter(InterviewSession.user_id == current_user.id)
+        .all()
+    )
+    for session in sessions:
+        db.delete(session)
+    db.commit()
