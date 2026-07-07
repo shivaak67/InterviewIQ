@@ -39,3 +39,43 @@ export async function fetchInterviewSession(
 
   return handleResponse<InterviewSession>(response);
 }
+
+export async function rerollInterviewSession(
+  sessionId: number,
+): Promise<InterviewSession> {
+  const response = await fetch(`${API_URL}/interviews/${sessionId}/reroll`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+  });
+
+  return handleResponse<InterviewSession>(response);
+}
+
+async function handleEmptyResponse(response: Response): Promise<void> {
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: "Request failed" }));
+    const message =
+      typeof error.detail === "string"
+        ? error.detail
+        : "Something went wrong";
+    throw new Error(message);
+  }
+}
+
+export async function deleteInterviewSession(sessionId: number): Promise<void> {
+  const response = await fetch(`${API_URL}/interviews/${sessionId}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+
+  return handleEmptyResponse(response);
+}
+
+export async function clearInterviewSessions(): Promise<void> {
+  const response = await fetch(`${API_URL}/interviews/`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+
+  return handleEmptyResponse(response);
+}
