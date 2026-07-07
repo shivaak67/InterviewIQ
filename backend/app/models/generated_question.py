@@ -16,3 +16,9 @@ class GeneratedQuestion(Base):
     order_index: Mapped[int] = mapped_column(Integer, nullable=False)
 
     session = relationship("InterviewSession", back_populates="questions")
+    suggested_answer = relationship(
+        "SuggestedAnswer",
+        back_populates="question",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
