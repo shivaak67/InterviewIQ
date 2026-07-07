@@ -140,6 +140,29 @@ def get_interview(
     return to_session_response(session)
 
 
+@router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_interview(
+    session_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    session = (
+        db.query(InterviewSession)
+        .filter(
+            InterviewSession.id == session_id,
+            InterviewSession.user_id == current_user.id,
+        )
+        .first()
+    )
+    if session is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Interview session not found",
+        )
+    db.delete(session)
+    db.commit()
+
+
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
 def clear_interviews(
     current_user: User = Depends(get_current_user),

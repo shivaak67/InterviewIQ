@@ -4,11 +4,29 @@ import SessionProgress from "./SessionProgress";
 
 type InterviewSessionCardProps = {
   session: InterviewSessionSummary;
+  onDelete: (sessionId: number) => void;
+  isDeleting: boolean;
+  deletingSessionId: number | null;
 };
 
 export default function InterviewSessionCard({
   session,
+  onDelete,
+  isDeleting,
+  deletingSessionId,
 }: InterviewSessionCardProps) {
+  const isThisSessionDeleting = isDeleting && deletingSessionId === session.id;
+
+  function handleDelete() {
+    const confirmed = window.confirm(
+      "Delete this interview session? This cannot be undone.",
+    );
+    if (!confirmed) {
+      return;
+    }
+    onDelete(session.id);
+  }
+
   return (
     <li className="rounded border border-gray-200 bg-white p-4 shadow-sm transition hover:border-gray-300">
       <div className="flex items-start justify-between gap-4">
@@ -30,12 +48,22 @@ export default function InterviewSessionCard({
             />
           </div>
         </div>
-        <Link
-          to={`/dashboard/sessions/${session.id}`}
-          className="shrink-0 rounded bg-black px-3 py-1.5 text-xs text-white transition hover:bg-gray-800"
-        >
-          Open
-        </Link>
+        <div className="flex shrink-0 flex-col gap-2">
+          <Link
+            to={`/dashboard/sessions/${session.id}`}
+            className="rounded bg-black px-3 py-1.5 text-center text-xs text-white transition hover:bg-gray-800"
+          >
+            Open
+          </Link>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="rounded border border-red-200 px-3 py-1.5 text-xs text-red-700 transition hover:bg-red-50 disabled:opacity-50"
+          >
+            {isThisSessionDeleting ? "Deleting..." : "Delete"}
+          </button>
+        </div>
       </div>
     </li>
   );

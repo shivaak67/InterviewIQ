@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { clearInterviewSessions, fetchInterviewSessions } from "../../api/interviews";
+import {
+  clearInterviewSessions,
+  deleteInterviewSession,
+  fetchInterviewSessions,
+} from "../../api/interviews";
 import InterviewSessionCard from "./InterviewSessionCard";
 
 export default function InterviewSessionList() {
@@ -15,6 +19,14 @@ export default function InterviewSessionList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["interview-sessions"] });
       queryClient.removeQueries({ queryKey: ["interview-session"] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteInterviewSession,
+    onSuccess: (_data, sessionId) => {
+      queryClient.invalidateQueries({ queryKey: ["interview-sessions"] });
+      queryClient.removeQueries({ queryKey: ["interview-session", sessionId] });
     },
   });
 
@@ -58,6 +70,13 @@ export default function InterviewSessionList() {
             : "Could not clear interview history"}
         </p>
       )}
+      {deleteMutation.isError && (
+        <p className="mt-4 text-sm text-red-600">
+          {deleteMutation.error instanceof Error
+            ? deleteMutation.error.message
+            : "Could not delete interview session"}
+        </p>
+      )}
 
       {isLoading && (
         <p className="mt-4 text-sm text-gray-500">Loading interview sessions...</p>
@@ -75,7 +94,13 @@ export default function InterviewSessionList() {
       {!isLoading && !isError && data && data.length > 0 && (
         <ul className="mt-4 space-y-3">
           {data.map((session) => (
-            <InterviewSessionCard key={session.id} session={session} />
+            <InterviewSessionCard
+              key={session.id}
+              session={session}
+              onDelete={(sessionId) => deleteMutation.mutate(sessionId)}
+              isDeleting={deleteMutation.isPending}
+              deletingSessionId={deleteMutation.variables ?? null}
+            />
           ))}
         </ul>
       )}
