@@ -14,7 +14,7 @@ export default function HeroSection() {
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600">
         Upload your resume, paste a job description, and get personalized
-        questions with model answers — so you walk in prepared.
+        questions with model answers so you walk in prepared.
       </p>
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
         {user ? (
