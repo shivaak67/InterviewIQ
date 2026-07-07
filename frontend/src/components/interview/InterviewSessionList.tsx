@@ -1,27 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import {
-  fetchInterviewSession,
-  fetchInterviewSessions,
-} from "../../api/interviews";
-import QuestionWithAnswer from "./QuestionWithAnswer";
+import { Link } from "react-router-dom";
+import { fetchInterviewSessions } from "../../api/interviews";
 
 export default function InterviewSessionList() {
-  const [expandedSessionId, setExpandedSessionId] = useState<number | null>(null);
-
   const { data, isLoading, isError } = useQuery({
     queryKey: ["interview-sessions"],
     queryFn: fetchInterviewSessions,
-  });
-
-  const {
-    data: expandedSession,
-    isLoading: sessionLoading,
-    isError: sessionError,
-  } = useQuery({
-    queryKey: ["interview-session", expandedSessionId],
-    queryFn: () => fetchInterviewSession(expandedSessionId!),
-    enabled: expandedSessionId !== null,
   });
 
   return (
@@ -41,51 +25,28 @@ export default function InterviewSessionList() {
 
       {!isLoading && !isError && data && data.length > 0 && (
         <ul className="mt-4 space-y-3">
-          {data.map((session) => {
-            const isExpanded = expandedSessionId === session.id;
-
-            return (
-              <li
-                key={session.id}
-                className="rounded border border-gray-100 bg-gray-50 p-4"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="font-medium">Interview session #{session.id}</p>
-                    <p className="mt-1 text-xs text-gray-500">
-                      {session.question_count} questions ·{" "}
-                      {new Date(session.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setExpandedSessionId(isExpanded ? null : session.id)
-                    }
-                    className="shrink-0 rounded border border-gray-300 px-3 py-1 text-xs transition hover:bg-white"
-                  >
-                    {isExpanded ? "Hide" : "View"}
-                  </button>
-                </div>
-
-                {isExpanded && sessionLoading && (
-                  <p className="mt-4 text-sm text-gray-500">Loading questions...</p>
-                )}
-                {isExpanded && sessionError && (
-                  <p className="mt-4 text-sm text-red-600">
-                    Could not load questions.
+          {data.map((session) => (
+            <li
+              key={session.id}
+              className="rounded border border-gray-100 bg-gray-50 p-4"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-medium">Interview session #{session.id}</p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    {session.question_count} questions ·{" "}
+                    {new Date(session.created_at).toLocaleString()}
                   </p>
-                )}
-                {isExpanded && expandedSession && (
-                  <ol className="mt-4 list-decimal space-y-3 pl-5">
-                    {expandedSession.questions.map((question) => (
-                      <QuestionWithAnswer key={question.id} question={question} />
-                    ))}
-                  </ol>
-                )}
-              </li>
-            );
-          })}
+                </div>
+                <Link
+                  to={`/dashboard/sessions/${session.id}`}
+                  className="shrink-0 rounded border border-gray-300 px-3 py-1 text-xs transition hover:bg-white"
+                >
+                  Open
+                </Link>
+              </div>
+            </li>
+          ))}
         </ul>
       )}
     </section>

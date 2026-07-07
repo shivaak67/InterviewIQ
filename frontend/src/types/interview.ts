@@ -13,6 +13,10 @@ export type InterviewSession = {
   job_description_id: number;
   status: string;
   created_at: string;
+  question_count: number;
+  answer_count: number;
+  resume_filename: string;
+  job_description_preview: string;
   questions: GeneratedQuestion[];
 };
 
@@ -24,4 +28,7 @@ export type InterviewSessionSummary = {
   status: string;
   created_at: string;
   question_count: number;
+  answer_count: number;
+  resume_filename: string;
+  job_description_preview: string;
 };

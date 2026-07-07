@@ -1,20 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { fetchJobDescriptions } from "../../api/jobDescriptions";
 import { generateInterview } from "../../api/interviews";
 import { fetchResumes } from "../../api/resumes";
 import type { InterviewSession } from "../../types/interview";
-import QuestionWithAnswer from "./QuestionWithAnswer";
-
-function QuestionList({ session }: { session: InterviewSession }) {
-  return (
-    <ol className="mt-4 list-decimal space-y-3 pl-5">
-      {session.questions.map((question) => (
-        <QuestionWithAnswer key={question.id} question={question} />
-      ))}
-    </ol>
-  );
-}
+import InterviewSessionDetail from "./InterviewSessionDetail";
 
 export default function InterviewGenerator() {
   const queryClient = useQueryClient();
@@ -133,11 +124,16 @@ export default function InterviewGenerator() {
 
       {latestSession && (
         <div className="mt-6 rounded border border-gray-100 bg-gray-50 p-4">
-          <h3 className="font-medium">Generated questions</h3>
-          <p className="mt-1 text-xs text-gray-500">
-            Session created {new Date(latestSession.created_at).toLocaleString()}
-          </p>
-          <QuestionList session={latestSession} />
+          <div className="flex items-center justify-between gap-4">
+            <h3 className="font-medium">Generated questions</h3>
+            <Link
+              to={`/dashboard/sessions/${latestSession.id}`}
+              className="text-xs underline"
+            >
+              Open full session
+            </Link>
+          </div>
+          <InterviewSessionDetail session={latestSession} />
         </div>
       )}
     </section>
