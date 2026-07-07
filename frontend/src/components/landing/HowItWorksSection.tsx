@@ -2,7 +2,7 @@ const steps = [
   {
     step: "1",
     title: "Upload your resume",
-    description: "Add a PDF resume so InterviewIQ understands your skills and projects.",
+    description: "Add a PDF resume so Prep Pilot understands your skills and projects.",
   },
   {
     step: "2",

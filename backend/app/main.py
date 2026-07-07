@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import answers, auth, interviews, job_descriptions, resumes
 
-app = FastAPI(title="InterviewIQ API")
+app = FastAPI(title="Prep Pilot API")
 
 app.add_middleware(
     CORSMiddleware,

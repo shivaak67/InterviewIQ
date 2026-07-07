@@ -27,7 +27,7 @@ export default function FeaturesSection() {
       <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
         <h2 className="text-center text-2xl font-bold">Everything you need to prepare</h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-gray-600">
-          InterviewIQ turns your background and target role into a focused practice plan.
+          Prep Pilot turns your background and target role into a focused practice plan.
         </p>
         <ul className="mt-10 grid gap-6 sm:grid-cols-2">
           {features.map((feature) => (

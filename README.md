@@ -1,8 +1,8 @@
-# InterviewIQ
+# Prep Pilot
 
 **AI-powered interview preparation for software engineering roles.**
 
-InterviewIQ helps candidates practice for real interviews by generating personalized questions from their resume and a target job description, then providing model answers (including STAR-format responses for behavioral questions).
+Prep Pilot helps candidates practice for real interviews by generating personalized questions from their resume and a target job description, then providing model answers (including STAR-format responses for behavioral questions).
 
 Built as a full-stack portfolio project to demonstrate end-to-end product development: authentication, file handling, structured data storage, AI integration, and a polished user experience.
 
@@ -10,7 +10,7 @@ Built as a full-stack portfolio project to demonstrate end-to-end product develo
 
 ## Why this project?
 
-Technical interviews are high-stakes, but most prep tools use generic question banks. InterviewIQ takes a different approach:
+Technical interviews are high-stakes, but most prep tools use generic question banks. Prep Pilot takes a different approach:
 
 1. Upload your **resume** (PDF)
 2. Paste a **job description**

@@ -28,7 +28,7 @@ export default function RegisterPage() {
   return (
     <main className="mx-auto max-w-md p-8">
       <h1 className="text-2xl font-bold">Register</h1>
-      <p className="mt-2 text-gray-600">Create your InterviewIQ account</p>
+      <p className="mt-2 text-gray-600">Create your Prep Pilot account</p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>

@@ -1,5 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL;
-const TOKEN_KEY = "interviewiq_token";
+const TOKEN_KEY = "preppilot_token";
 
 export function getStoredToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
