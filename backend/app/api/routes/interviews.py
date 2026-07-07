@@ -140,6 +140,70 @@ def get_interview(
     return to_session_response(session)
 
 
+@router.post("/{session_id}/reroll", response_model=InterviewSessionResponse)
+def reroll_interview(
+    session_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> InterviewSessionResponse:
+    session = load_user_session(db, session_id, current_user.id)
+    if session is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Interview session not found",
+        )
+
+    resume = session.resume
+    job_description = session.job_description
+    if not resume.extracted_text:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Resume has no extracted text",
+        )
+
+    previous_questions = [question.question_text for question in session.questions]
+    for question in list(session.questions):
+        db.delete(question)
+    db.flush()
+
+    try:
+        drafts = generate_interview_questions(
+            resume_text=resume.extracted_text,
+            job_description_text=job_description.raw_text,
+            previous_questions=previous_questions,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        ) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to reroll interview questions",
+        ) from exc
+
+    for index, draft in enumerate(drafts):
+        db.add(
+            GeneratedQuestion(
+                session_id=session.id,
+                question_type=draft.question_type,
+                question_text=draft.question_text,
+                order_index=index,
+            )
+        )
+
+    db.commit()
+
+    loaded_session = load_user_session(db, session.id, current_user.id)
+    if loaded_session is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to load rerolled interview session",
+        )
+    return to_session_response(loaded_session)
+
+
 @router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_interview(
     session_id: int,

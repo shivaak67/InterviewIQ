@@ -40,6 +40,17 @@ export async function fetchInterviewSession(
   return handleResponse<InterviewSession>(response);
 }
 
+export async function rerollInterviewSession(
+  sessionId: number,
+): Promise<InterviewSession> {
+  const response = await fetch(`${API_URL}/interviews/${sessionId}/reroll`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+  });
+
+  return handleResponse<InterviewSession>(response);
+}
+
 async function handleEmptyResponse(response: Response): Promise<void> {
   if (!response.ok) {
     const error = await response.json().catch(() => ({ detail: "Request failed" }));
