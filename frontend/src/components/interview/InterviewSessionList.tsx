@@ -4,10 +4,7 @@ import {
   fetchInterviewSession,
   fetchInterviewSessions,
 } from "../../api/interviews";
-
-function formatQuestionType(type: string): string {
-  return type.replaceAll("_", " ");
-}
+import QuestionWithAnswer from "./QuestionWithAnswer";
 
 export default function InterviewSessionList() {
   const [expandedSessionId, setExpandedSessionId] = useState<number | null>(null);
@@ -82,12 +79,7 @@ export default function InterviewSessionList() {
                 {isExpanded && expandedSession && (
                   <ol className="mt-4 list-decimal space-y-3 pl-5">
                     {expandedSession.questions.map((question) => (
-                      <li key={question.id} className="text-sm text-gray-700">
-                        <span className="font-medium capitalize text-gray-900">
-                          {formatQuestionType(question.question_type)}
-                        </span>
-                        <p className="mt-1">{question.question_text}</p>
-                      </li>
+                      <QuestionWithAnswer key={question.id} question={question} />
                     ))}
                   </ol>
                 )}

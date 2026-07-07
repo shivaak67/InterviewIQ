@@ -4,21 +4,13 @@ import { fetchJobDescriptions } from "../../api/jobDescriptions";
 import { generateInterview } from "../../api/interviews";
 import { fetchResumes } from "../../api/resumes";
 import type { InterviewSession } from "../../types/interview";
-
-function formatQuestionType(type: string): string {
-  return type.replaceAll("_", " ");
-}
+import QuestionWithAnswer from "./QuestionWithAnswer";
 
 function QuestionList({ session }: { session: InterviewSession }) {
   return (
     <ol className="mt-4 list-decimal space-y-3 pl-5">
       {session.questions.map((question) => (
-        <li key={question.id} className="text-sm text-gray-700">
-          <span className="font-medium capitalize text-gray-900">
-            {formatQuestionType(question.question_type)}
-          </span>
-          <p className="mt-1">{question.question_text}</p>
-        </li>
+        <QuestionWithAnswer key={question.id} question={question} />
       ))}
     </ol>
   );
