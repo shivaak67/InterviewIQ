@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
 from app.core.database import get_db
@@ -14,24 +14,14 @@ from app.schemas.interview import (
     InterviewSessionSummaryResponse,
 )
 from app.services.interview_generator import generate_interview_questions
+from app.services.interview_sessions import (
+    SESSION_LOAD_OPTIONS,
+    load_user_session,
+    to_session_response,
+    to_session_summary,
+)
 
 router = APIRouter(prefix="/interviews", tags=["interviews"])
-
-
-def _to_session_response(session: InterviewSession) -> InterviewSessionResponse:
-    return InterviewSessionResponse.model_validate(session)
-
-
-def _to_summary_response(session: InterviewSession) -> InterviewSessionSummaryResponse:
-    return InterviewSessionSummaryResponse(
-        id=session.id,
-        user_id=session.user_id,
-        resume_id=session.resume_id,
-        job_description_id=session.job_description_id,
-        status=session.status,
-        created_at=session.created_at,
-        question_count=len(session.questions),
-    )
 
 
 @router.post(
@@ -43,7 +33,7 @@ def generate_interview(
     payload: InterviewGenerateRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
-) -> InterviewSession:
+) -> InterviewSessionResponse:
     resume = (
         db.query(Resume)
         .filter(Resume.id == payload.resume_id, Resume.user_id == current_user.id)
@@ -110,19 +100,14 @@ def generate_interview(
         )
 
     db.commit()
-    db.refresh(session)
-    session = (
-        db.query(InterviewSession)
-        .options(joinedload(InterviewSession.questions))
-        .filter(InterviewSession.id == session.id)
-        .first()
-    )
-    if session is None:
+
+    loaded_session = load_user_session(db, session.id, current_user.id)
+    if loaded_session is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to load generated interview session",
         )
-    return session
+    return to_session_response(loaded_session)
 
 
 @router.get("/", response_model=list[InterviewSessionSummaryResponse])
@@ -132,12 +117,12 @@ def list_interviews(
 ) -> list[InterviewSessionSummaryResponse]:
     sessions = (
         db.query(InterviewSession)
-        .options(joinedload(InterviewSession.questions))
+        .options(*SESSION_LOAD_OPTIONS)
         .filter(InterviewSession.user_id == current_user.id)
         .order_by(InterviewSession.created_at.desc())
         .all()
     )
-    return [_to_summary_response(session) for session in sessions]
+    return [to_session_summary(session) for session in sessions]
 
 
 @router.get("/{session_id}", response_model=InterviewSessionResponse)
@@ -146,18 +131,10 @@ def get_interview(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> InterviewSessionResponse:
-    session = (
-        db.query(InterviewSession)
-        .options(joinedload(InterviewSession.questions))
-        .filter(
-            InterviewSession.id == session_id,
-            InterviewSession.user_id == current_user.id,
-        )
-        .first()
-    )
+    session = load_user_session(db, session_id, current_user.id)
     if session is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Interview session not found",
         )
-    return _to_session_response(session)
+    return to_session_response(session)
