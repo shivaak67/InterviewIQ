@@ -24,7 +24,7 @@ const features = [
 export default function FeaturesSection() {
   return (
     <section className="border-t border-gray-200 bg-white">
-      <div className="mx-auto max-w-5xl px-6 py-16">
+      <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
         <h2 className="text-center text-2xl font-bold">Everything you need to prepare</h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-gray-600">
           InterviewIQ turns your background and target role into a focused practice plan.

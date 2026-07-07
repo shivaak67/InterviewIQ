@@ -24,7 +24,7 @@ const steps = [
 export default function HowItWorksSection() {
   return (
     <section className="border-t border-gray-200 bg-gray-50">
-      <div className="mx-auto max-w-5xl px-6 py-16">
+      <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
         <h2 className="text-center text-2xl font-bold">How it works</h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-gray-600">
           Four steps from upload to interview-ready.

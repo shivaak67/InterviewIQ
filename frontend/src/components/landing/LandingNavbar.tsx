@@ -5,7 +5,7 @@ export default function LandingNavbar() {
   const { user } = useAuth();
 
   return (
-    <header className="border-b border-gray-200 bg-white">
+    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <Link to="/" className="text-lg font-bold tracking-tight">
           InterviewIQ

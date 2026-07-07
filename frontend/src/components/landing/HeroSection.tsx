@@ -5,7 +5,8 @@ export default function HeroSection() {
   const { user } = useAuth();
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-20 text-center">
+    <section className="bg-white">
+      <div className="mx-auto max-w-5xl px-6 py-16 text-center sm:py-24">
       <p className="text-sm font-medium uppercase tracking-wide text-gray-500">
         AI interview prep
       </p>
@@ -40,6 +41,7 @@ export default function HeroSection() {
             </Link>
           </>
         )}
+      </div>
       </div>
     </section>
   );
