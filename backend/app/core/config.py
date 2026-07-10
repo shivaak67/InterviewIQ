@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads/resumes"
     openai_api_key: str | None = None
     openai_model: str = "gpt-4o-mini"
+    cors_origins: str = (
+        "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173"
+    )
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
 
 settings = Settings()  # type: ignore[call-arg]
