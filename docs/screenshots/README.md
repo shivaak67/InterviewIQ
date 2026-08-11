@@ -1,16 +1,11 @@
 # Screenshots
 
-Drop your Prep Pilot screenshots here using these filenames so the root README displays them:
+Images used by the root README:
 
-| File | Suggested content |
-|------|-------------------|
+| File | Content |
+|------|---------|
 | `landing.png` | Marketing / landing page |
-| `dashboard.png` | Authenticated dashboard |
+| `dashboard.png` | Dashboard with resume upload |
+| `job-description.png` | Job description save & analysis |
+| `generate-interview.png` | Interview generation form |
 | `interview-session.png` | Generated interview questions |
-| `suggested-answer.png` | Suggested answer / STAR breakdown |
-
-Tips:
-
-- Prefer PNG or WebP
-- Capture at desktop width (~1280–1440px)
-- Crop browser chrome if it distracts from the UI

@@ -12,23 +12,25 @@ Built as a full-stack portfolio project to demonstrate end-to-end product develo
 
 ## Screenshots
 
-Replace the placeholder images in `docs/screenshots/` with your own screenshots. Keep the same filenames (or update the paths below).
-
 ### Landing page
 
 ![Prep Pilot landing page](docs/screenshots/landing.png)
 
-### Dashboard
+### Dashboard — resume upload
 
-![Prep Pilot dashboard](docs/screenshots/dashboard.png)
+![Prep Pilot dashboard with resume upload](docs/screenshots/dashboard.png)
+
+### Job description analysis
+
+![Job description saved with extracted technologies and keywords](docs/screenshots/job-description.png)
+
+### Generate interview
+
+![Generate interview from resume and job description](docs/screenshots/generate-interview.png)
 
 ### Interview session
 
-![Interview session with generated questions](docs/screenshots/interview-session.png)
-
-### Suggested answers
-
-![Suggested answer with STAR format](docs/screenshots/suggested-answer.png)
+![Interview session with personalized questions](docs/screenshots/interview-session.png)
 
 ---
 
