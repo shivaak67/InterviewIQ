@@ -224,10 +224,5 @@ Full interactive docs: http://localhost:8000/docs
 
 ## Author
 
-**Shiva** — [GitHub](https://github.com/shivaak67)
+**Shivaa Karthikgavaskar** — [GitHub](https://github.com/shivaak67)
 
----
-
-## License
-
-MIT (or specify your preferred license)
