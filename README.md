@@ -6,6 +6,30 @@ Prep Pilot helps candidates practice for real interviews by generating personali
 
 Built as a full-stack portfolio project to demonstrate end-to-end product development: authentication, file handling, structured data storage, AI integration, and a polished user experience.
 
+**Live demo:** [https://www.prep-pilot.com](https://www.prep-pilot.com)
+
+---
+
+## Screenshots
+
+Replace the placeholder images in `docs/screenshots/` with your own screenshots. Keep the same filenames (or update the paths below).
+
+### Landing page
+
+![Prep Pilot landing page](docs/screenshots/landing.png)
+
+### Dashboard
+
+![Prep Pilot dashboard](docs/screenshots/dashboard.png)
+
+### Interview session
+
+![Interview session with generated questions](docs/screenshots/interview-session.png)
+
+### Suggested answers
+
+![Suggested answer with STAR format](docs/screenshots/suggested-answer.png)
+
 ---
 
 ## Why this project?
