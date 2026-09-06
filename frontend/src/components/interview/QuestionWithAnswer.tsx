@@ -5,6 +5,7 @@ import {
 } from "../../api/answers";
 import type { GeneratedQuestion } from "../../types/interview";
 import type { SuggestedAnswer } from "../../types/answer";
+import PracticePanel from "./PracticePanel";
 
 function formatQuestionType(type: string): string {
   return type.replaceAll("_", " ");
@@ -113,7 +114,8 @@ export default function QuestionWithAnswer({ question }: QuestionWithAnswerProps
         {formatQuestionType(question.question_type)}
       </span>
       <p className="mt-1">{question.question_text}</p>
-      <SuggestedAnswerPanel questionId={question.id} />
+      <PracticePanel question={question} />
+      <details className="mt-4 rounded-lg border border-gray-200 p-4"><summary className="cursor-pointer text-sm font-medium">Need a starting point? Open answer guidance</summary><SuggestedAnswerPanel questionId={question.id} /></details>
     </li>
   );
 }

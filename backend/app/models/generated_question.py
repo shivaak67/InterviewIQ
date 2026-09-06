@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -14,6 +14,9 @@ class GeneratedQuestion(Base):
     question_type: Mapped[str] = mapped_column(String(50), nullable=False)
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
     order_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    draft_text: Mapped[str] = mapped_column(Text, nullable=False, default="", server_default="")
+    bookmarked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+    attempts = relationship("PracticeAttempt", back_populates="question", cascade="all, delete-orphan", order_by="PracticeAttempt.id")
 
     session = relationship("InterviewSession", back_populates="questions")
     suggested_answer = relationship(

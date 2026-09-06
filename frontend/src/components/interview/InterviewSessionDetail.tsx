@@ -44,6 +44,7 @@ export default function InterviewSessionDetail({
           <SessionProgress
             answerCount={session.answer_count}
             questionCount={session.question_count}
+            practicedCount={session.practiced_count}
           />
         </div>
       </div>
@@ -70,7 +71,7 @@ export default function InterviewSessionDetail({
         </p>
       )}
 
-      <ol className="mt-4 list-decimal space-y-4 pl-5">
+      <ol className="mt-4 list-decimal space-y-10 pl-5">
         {session.questions.map((question) => (
           <QuestionWithAnswer key={question.id} question={question} />
         ))}
