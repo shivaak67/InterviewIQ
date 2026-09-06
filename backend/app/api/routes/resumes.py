@@ -95,6 +95,8 @@ def delete_resume(
             detail="Resume not found",
         )
 
+    if resume.interview_sessions:
+        raise HTTPException(status_code=409, detail="Delete interview sessions using this resume before removing it.")
     delete_resume_file(resume.file_path)
     db.delete(resume)
     db.commit()

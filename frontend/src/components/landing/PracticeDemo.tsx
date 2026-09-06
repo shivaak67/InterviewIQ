@@ -1,0 +1,15 @@
+import {useState} from 'react';
+const sample = {
+  first: 'I would test the form and make sure errors are handled. I would also check that the API works.',
+  revised: 'I would simulate a failed API request and check that the form keeps the user’s input, announces the error, and offers a retry. I would also test a successful retry and repeated clicks to check that the UI does not create duplicate submissions. The tradeoff is balancing useful retries with the risk of repeating a request that already succeeded.',
+};
+export default function PracticeDemo() {
+  const [view, setView] = useState<'first' | 'feedback' | 'revised'>('feedback');
+  return <section id="sample" className="scroll-mt-24 border-y border-slate-200 bg-white"><div className="mx-auto grid max-w-6xl items-start gap-10 px-6 py-16 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+    <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-700">See what useful feedback looks like</p><h2 className="mt-4 text-3xl font-bold tracking-tight">From “I know this”<br />to “I can explain it.”</h2><p className="mt-5 leading-7 text-gray-600">An answer gets stronger when you can see what is missing. Explore a sample attempt, its feedback, and a more specific response.</p><p className="mt-4 text-xs leading-5 text-gray-500">Illustrative example, not a live AI evaluation. Your practice feedback is based on the answer you submit.</p></div>
+    <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-sm"><div className="bg-slate-900 p-6 text-white"><p className="text-xs font-medium uppercase tracking-widest text-indigo-200">Technical · Frontend engineering</p><h3 className="mt-3 text-lg font-medium leading-7">A user submits a form and the API request fails. What would you test, and why?</h3></div>
+      <div className="p-5 sm:p-6"><div className="flex flex-wrap gap-2" role="group" aria-label="Explore the sample answer">{([{key: 'first', label: 'First attempt'}, {key: 'feedback', label: 'Feedback'}, {key: 'revised', label: 'Stronger attempt'}] as const).map(item => <button type="button" key={item.key} aria-pressed={view === item.key} onClick={() => setView(item.key)} className={`rounded-lg px-3 py-2 text-xs font-semibold ${view === item.key ? 'bg-indigo-700 text-white' : 'bg-slate-100 text-slate-700'}`}>{item.label}</button>)}</div>
+      <div className="mt-5 min-h-44 text-sm leading-7" aria-live="polite">{view === 'feedback' ? <><p className="font-semibold text-gray-900">Good direction. Now make it testable.</p><p className="mt-3 text-gray-600">“Errors are handled” does not explain what the user should see or what the test should assert.</p><div className="mt-4 rounded-lg bg-indigo-50 p-4 text-indigo-950"><strong>Try next:</strong> Name the failure you simulate, the expected UI behavior, and one retry edge case.</div></> : <><p className="text-gray-700">{sample[view]}</p>{view === 'revised' && <p className="mt-3 text-xs text-indigo-700">Specific scenario → observable behavior → edge case → tradeoff</p>}</>}</div></div>
+    </div>
+  </div></section>;
+}

@@ -6,9 +6,9 @@ export default function LandingNavbar() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <Link to="/" className="text-lg font-bold tracking-tight">
-          Prep Pilot
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-8">
+        <Link to="/" className="flex items-center gap-2 text-lg font-bold tracking-tight">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-indigo-700 text-xs text-white">PP</span> Prep Pilot
         </Link>
         <nav className="flex items-center gap-3 text-sm">
           {user ? (

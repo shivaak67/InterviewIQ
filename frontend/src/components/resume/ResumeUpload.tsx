@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState, type FormEvent } from "react";
 import { uploadResume } from "../../api/resumes";
 import { formatFileSize, MAX_RESUME_SIZE_BYTES } from "../../utils/fileSize";
+import {Link} from "react-router-dom";
 
 export default function ResumeUpload() {
   const queryClient = useQueryClient();
@@ -79,6 +80,7 @@ export default function ResumeUpload() {
       <p className="mt-1 text-sm text-gray-600">
         Upload a PDF resume. Max size: {formatFileSize(MAX_RESUME_SIZE_BYTES)}.
       </p>
+      <p className="mt-2 text-xs leading-5 text-gray-500">Remove sensitive contact or employer details before uploading. Relevant resume text is sent to AI when you generate practice or feedback. <Link to="/privacy" className="underline">How your data is used</Link></p>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4">
         <div className="flex flex-wrap items-center gap-3">
