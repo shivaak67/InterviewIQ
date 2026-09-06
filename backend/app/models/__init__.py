@@ -1,5 +1,6 @@
 from app.models import (
     practice_attempt,
+    password_reset,
     generated_question,
     interview_session,
     job_description,
@@ -10,6 +11,7 @@ from app.models import (
 
 __all__ = [
     "practice_attempt",
+    "password_reset",
     "generated_question",
     "interview_session",
     "job_description",
