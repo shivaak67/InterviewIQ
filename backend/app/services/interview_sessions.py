@@ -44,7 +44,7 @@ def to_session_summary(session: InterviewSession) -> InterviewSessionSummaryResp
         answer_count=_answer_count(session),
         resume_filename=session.resume.original_filename,
         job_description_preview=_job_description_preview(
-            session.job_description.raw_text
+            (session.job_description.parsed_json or {}).get("title") or session.job_description.raw_text
         ),
     )
 
@@ -61,7 +61,7 @@ def to_session_response(session: InterviewSession) -> InterviewSessionResponse:
         answer_count=_answer_count(session),
         resume_filename=session.resume.original_filename,
         job_description_preview=_job_description_preview(
-            session.job_description.raw_text
+            (session.job_description.parsed_json or {}).get("title") or session.job_description.raw_text
         ),
         questions=[
             GeneratedQuestionResponse.model_validate(question)

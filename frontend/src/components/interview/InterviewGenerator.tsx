@@ -99,10 +99,9 @@ export default function InterviewGenerator() {
               className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
             >
               <option value="">Select a job description</option>
-              {jobDescriptions?.map((job, index) => (
+              {jobDescriptions?.map((job) => (
                 <option key={job.id} value={job.id}>
-                  Job description #{jobDescriptions.length - index} —{" "}
-                  {new Date(job.created_at).toLocaleDateString()}
+                  {job.parsed_json?.title || job.raw_text.slice(0, 80)}
                 </option>
               ))}
             </select>

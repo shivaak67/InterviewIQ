@@ -8,6 +8,7 @@ const MAX_LENGTH = 20000;
 export default function JobDescriptionForm() {
   const queryClient = useQueryClient();
   const [rawText, setRawText] = useState("");
+  const [title, setTitle] = useState("");
   const [error, setError] = useState("");
 
   const createMutation = useMutation({
@@ -15,6 +16,7 @@ export default function JobDescriptionForm() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["job-descriptions"] });
       setRawText("");
+      setTitle("");
       setError("");
     },
     onError: (err: Error) => {
@@ -36,7 +38,7 @@ export default function JobDescriptionForm() {
       return;
     }
 
-    createMutation.mutate(trimmed);
+    createMutation.mutate({rawText: trimmed, title});
   }
 
   return (
@@ -47,6 +49,8 @@ export default function JobDescriptionForm() {
       </p>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+        <div><label htmlFor="job-title" className="block text-sm font-medium">Company and role</label>
+          <input id="job-title" value={title} onChange={e => setTitle(e.target.value)} maxLength={160} placeholder="Pylon — Software Engineer Intern" className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm" /></div>
         <div>
           <label htmlFor="job-description" className="block text-sm font-medium">
             Job description
@@ -56,6 +60,7 @@ export default function JobDescriptionForm() {
             value={rawText}
             onChange={(e) => setRawText(e.target.value)}
             rows={8}
+            maxLength={MAX_LENGTH}
             placeholder="Paste the full job description here..."
             className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
           />

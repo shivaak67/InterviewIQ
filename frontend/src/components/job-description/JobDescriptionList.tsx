@@ -1,132 +1,52 @@
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  deleteJobDescription,
-  fetchJobDescriptions,
-} from "../../api/jobDescriptions";
-import type { ParsedJobData } from "../../types/jobDescription";
+import { deleteJobDescription, fetchJobDescriptions, updateJobDescription } from "../../api/jobDescriptions";
+import type { JobDescription } from "../../types/jobDescription";
 
-function TagList({ label, items }: { label: string; items: string[] }) {
-  if (items.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="mt-3">
-      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-        {label}
-      </p>
-      <div className="mt-1 flex flex-wrap gap-2">
-        {items.map((item) => (
-          <span
-            key={item}
-            className="rounded-full bg-white px-2 py-1 text-xs text-gray-700 ring-1 ring-gray-200"
-          >
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ParsedDetails({ parsed }: { parsed: ParsedJobData | null }) {
-  if (!parsed) {
-    return (
-      <p className="mt-2 text-sm text-gray-500">No parsed data available.</p>
-    );
-  }
-
-  return (
-    <div>
-      <TagList label="Technologies" items={parsed.technologies} />
-      <TagList label="Skills" items={parsed.skills} />
-      <TagList label="Keywords" items={parsed.keywords} />
-      {parsed.responsibilities.length > 0 && (
-        <div className="mt-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-            Responsibilities
-          </p>
-          <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-gray-600">
-            {parsed.responsibilities.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
+function JobCard({job}: {job: JobDescription}) {
+  const client = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState(job.parsed_json?.title || job.raw_text.slice(0, 80));
+  const [technologies, setTechnologies] = useState(job.parsed_json?.technologies.join(", ") || "");
+  const [required, setRequired] = useState(job.parsed_json?.required_skills?.join(", ") || "");
+  const [preferred, setPreferred] = useState(job.parsed_json?.preferred_skills?.join(", ") || "");
+  const refresh = () => {
+    client.invalidateQueries({queryKey: ["job-descriptions"]});
+    client.invalidateQueries({queryKey: ["interview-sessions"]});
+    client.invalidateQueries({queryKey: ["interview-session"]});
+  };
+  const split = (text: string) => [...new Set(text.split(",").map(item => item.trim()).filter(Boolean))];
+  const save = useMutation({mutationFn: () => updateJobDescription(job.id, {title, technologies: split(technologies), required_skills: split(required), preferred_skills: split(preferred)}), onSuccess: () => {setEditing(false); refresh();}});
+  const remove = useMutation({mutationFn: () => deleteJobDescription(job.id), onSuccess: refresh});
+  return <li className="rounded-xl border border-gray-200 bg-white p-5">
+    <h3 className="font-semibold">{job.parsed_json?.title || job.raw_text.slice(0, 80)}</h3>
+    <p className="mt-1 text-xs text-gray-500">Saved {new Date(job.created_at).toLocaleDateString()}</p>
+    {editing ? <form className="mt-4 space-y-3" onSubmit={e => {e.preventDefault(); save.mutate();}}>
+      {[{label: "Company and role", value: title, set: setTitle}, {label: "Technologies (comma separated)", value: technologies, set: setTechnologies}, {label: "Required skills (comma separated)", value: required, set: setRequired}, {label: "Preferred skills (comma separated)", value: preferred, set: setPreferred}].map(field => <label className="block text-sm" key={field.label}>{field.label}<input className="mt-1 w-full rounded border border-gray-300 p-2" value={field.value} maxLength={field.label === "Company and role" ? 160 : 2000} onChange={e => field.set(e.target.value)} /></label>)}
+      <button disabled={save.isPending} className="rounded bg-black px-4 py-2 text-sm text-white">{save.isPending ? "Saving…" : "Save corrections"}</button>
+      <button type="button" onClick={() => setEditing(false)} className="ml-3 text-sm underline">Cancel</button>
+    </form> : <>
+      <div className="mt-3 flex flex-wrap gap-2">{job.parsed_json?.technologies.map(item => <span key={item} className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs text-indigo-900">{item}</span>)}</div>
+      <p className="mt-3 text-xs text-gray-500">Extracted automatically. Review and correct before practicing.</p>
+      <details className="mt-4 text-sm"><summary className="cursor-pointer font-medium">Requirements and full posting</summary>
+        <p className="mt-3"><strong>Required:</strong> {job.parsed_json?.required_skills?.join(", ") || "Not explicitly identified"}</p>
+        <p className="mt-2"><strong>Preferred:</strong> {job.parsed_json?.preferred_skills?.join(", ") || "Not explicitly identified"}</p>
+        {(job.parsed_json?.responsibilities.length ?? 0) > 0 && <ul className="mt-3 list-disc space-y-1 pl-5">{job.parsed_json?.responsibilities.map(item => <li key={item}>{item}</li>)}</ul>}
+        <p className="mt-4 whitespace-pre-wrap text-gray-600">{job.raw_text}</p>
+      </details>
+      <button className="mt-4 text-sm font-medium text-indigo-700 underline" onClick={() => setEditing(true)}>Edit name and skills</button>
+      <button disabled={remove.isPending} className="ml-4 text-sm text-red-700" onClick={() => {if (window.confirm("Remove this job description? Delete linked interview sessions first. This cannot be undone.")) remove.mutate();}}>Remove</button>
+    </>}
+    {(save.error || remove.error) && <p role="alert" className="mt-3 text-sm text-red-700">{save.error?.message || remove.error?.message}</p>}
+  </li>;
 }
 
 export default function JobDescriptionList() {
-  const queryClient = useQueryClient();
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["job-descriptions"],
-    queryFn: fetchJobDescriptions,
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteJobDescription,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["job-descriptions"] });
-    },
-  });
-
-  return (
-    <section className="mt-8 rounded border border-gray-200 p-6">
-      <h2 className="text-lg font-semibold">Your Job Descriptions</h2>
-
-      {isLoading && (
-        <p className="mt-4 text-sm text-gray-500">Loading job descriptions...</p>
-      )}
-      {isError && (
-        <p className="mt-4 text-sm text-red-600">Could not load job descriptions.</p>
-      )}
-
-      {deleteMutation.isError && (
-        <p className="mt-4 text-sm text-red-600">
-          {deleteMutation.error instanceof Error
-            ? deleteMutation.error.message
-            : "Could not delete job description"}
-        </p>
-      )}
-
-      {!isLoading && !isError && data?.length === 0 && (
-        <p className="mt-4 text-sm text-gray-500">No job descriptions saved yet.</p>
-      )}
-
-      {!isLoading && !isError && data && data.length > 0 && (
-        <ul className="mt-4 space-y-3">
-          {data.map((job) => (
-            <li
-              key={job.id}
-              className="rounded border border-gray-100 bg-gray-50 p-4"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-gray-500">
-                    Saved {new Date(job.created_at).toLocaleString()}
-                  </p>
-                  <p className="mt-2 line-clamp-3 text-sm text-gray-700">
-                    {job.raw_text}
-                  </p>
-                  <ParsedDetails parsed={job.parsed_json} />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => deleteMutation.mutate(job.id)}
-                  disabled={deleteMutation.isPending}
-                  className="shrink-0 rounded border border-red-200 px-3 py-1 text-xs text-red-700 transition hover:bg-red-50 disabled:opacity-50"
-                >
-                  {deleteMutation.isPending &&
-                  deleteMutation.variables === job.id
-                    ? "Removing..."
-                    : "Remove"}
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  );
+  const {data, isLoading, isError} = useQuery({queryKey: ["job-descriptions"], queryFn: fetchJobDescriptions});
+  return <section className="mt-8 rounded-xl border border-gray-200 p-6"><h2 className="text-lg font-semibold">Saved roles</h2>
+    {isLoading && <p className="mt-4">Loading roles…</p>}
+    {isError && <p role="alert" className="mt-4 text-red-700">Could not load roles. Please refresh.</p>}
+    {data?.length === 0 && <p className="mt-4 text-gray-600">Save a job posting to focus your practice.</p>}
+    <ul className="mt-4 space-y-4">{data?.map(job => <JobCard key={job.id} job={job} />)}</ul>
+  </section>;
 }
