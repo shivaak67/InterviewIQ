@@ -14,7 +14,7 @@ export default function SessionProgress({
     <div>
       <div className="flex items-center justify-between text-xs text-gray-500">
         <span>
-          {answerCount} of {questionCount} answers prepared
+          {answerCount} of {questionCount} answer guides generated
         </span>
         <span>{percent}%</span>
       </div>
