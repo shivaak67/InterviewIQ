@@ -8,7 +8,7 @@ export default function PracticePanel({question}: {question: GeneratedQuestion})
   const [answer, setAnswer] = useState(question.draft_text || '');
   const [savedText, setSavedText] = useState(question.draft_text || '');
   const [bookmarked, setBookmarked] = useState(question.bookmarked || false);
-  const [followUpFrom, setFollowUpFrom] = useState<number>();
+  const [followUpFrom, setFollowUpFrom] = useState<number | undefined>(question.draft_follow_up_from ?? undefined);
   const [notice, setNotice] = useState('');
   const attempts = useQuery({queryKey: ['practice-attempts', question.id], queryFn: () => fetchAttempts(question.id), retry: 1});
   const latest = attempts.data?.at(-1);
@@ -17,9 +17,9 @@ export default function PracticePanel({question}: {question: GeneratedQuestion})
     client.invalidateQueries({queryKey: ['interview-session', question.session_id]});
     client.invalidateQueries({queryKey: ['interview-sessions']});
   };
-  const save = useMutation({mutationFn: () => saveDraft(question.id, answer, bookmarked), onSuccess: () => {setSavedText(answer); setNotice('Draft and bookmark saved.'); refresh();}});
+  const save = useMutation({mutationFn: () => saveDraft(question.id, answer, bookmarked, followUpFrom), onSuccess: () => {setSavedText(answer); setNotice('Draft and bookmark saved.'); refresh();}});
   const submit = useMutation({mutationFn: async () => {
-    await saveDraft(question.id, answer, bookmarked);
+    await saveDraft(question.id, answer, bookmarked, followUpFrom);
     return submitAttempt(question.id, answer.trim(), followUpFrom);
   }, onSuccess: (attempt) => {
     client.setQueryData(['practice-attempts', question.id], [...(attempts.data || []), attempt]);

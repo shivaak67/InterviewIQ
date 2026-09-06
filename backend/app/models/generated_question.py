@@ -15,6 +15,7 @@ class GeneratedQuestion(Base):
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
     order_index: Mapped[int] = mapped_column(Integer, nullable=False)
     draft_text: Mapped[str] = mapped_column(Text, nullable=False, default="", server_default="")
+    draft_follow_up_from: Mapped[int | None] = mapped_column(Integer, nullable=True)
     bookmarked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
     attempts = relationship("PracticeAttempt", back_populates="question", cascade="all, delete-orphan", order_by="PracticeAttempt.id")
 

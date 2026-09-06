@@ -132,7 +132,10 @@ def list_attempts(question_id: int, current_user: User = Depends(get_current_use
 def save_practice_draft(question_id: int, payload: PracticeDraft,
                         current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     question = _get_user_question(question_id, current_user.id, db)
+    if payload.follow_up_from is not None and not any(a.id == payload.follow_up_from for a in question.attempts):
+        raise HTTPException(status_code=404, detail="Previous attempt not found")
     question.draft_text = payload.draft_text
+    question.draft_follow_up_from = payload.follow_up_from
     question.bookmarked = payload.bookmarked
     db.commit()
     return payload
@@ -159,6 +162,7 @@ def submit_attempt(question_id: int, payload: PracticeSubmission,
                                prompt_text=prompt, feedback_json=feedback.model_dump())
     db.add(attempt)
     question.draft_text = payload.answer_text
+    question.draft_follow_up_from = payload.follow_up_from
     db.commit()
     db.refresh(attempt)
     return attempt

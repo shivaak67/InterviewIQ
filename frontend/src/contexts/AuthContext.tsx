@@ -1,10 +1,8 @@
-import {createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode} from 'react';
+import {useCallback, useEffect, useMemo, useState, type ReactNode} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {clearStoredToken, fetchCurrentUser, getStoredToken, loginUser, registerUser, setStoredToken} from '../api/auth';
-import type {User} from '../types/auth';
+import {AuthContext} from './useAuth';
 
-type AuthContextValue = {user: User | null; isLoading: boolean; login: (email: string, password: string) => Promise<void>; register: (email: string, password: string) => Promise<void>; logout: () => void};
-const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({children}: {children: ReactNode}) {
   const client = useQueryClient();
@@ -27,12 +25,4 @@ export function AuthProvider({children}: {children: ReactNode}) {
   const isLoading = hasToken && current.isPending;
   const value = useMemo(() => ({user, isLoading, login, register, logout}), [user, isLoading, login, register, logout]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-// Sharing the context hook alongside its provider is intentional.
-// eslint-disable-next-line react-refresh/only-export-components
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
 }

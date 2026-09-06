@@ -5,6 +5,7 @@ export type GeneratedQuestion = {
   question_text: string;
   order_index: number;
   draft_text?: string;
+  draft_follow_up_from?: number | null;
   bookmarked?: boolean;
 };
 

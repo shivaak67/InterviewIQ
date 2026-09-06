@@ -105,11 +105,12 @@ function SuggestedAnswerPanel({ questionId }: { questionId: number }) {
 
 type QuestionWithAnswerProps = {
   question: GeneratedQuestion;
+  hidden?: boolean;
 };
 
-export default function QuestionWithAnswer({ question }: QuestionWithAnswerProps) {
+export default function QuestionWithAnswer({ question, hidden }: QuestionWithAnswerProps) {
   return (
-    <li className="text-sm text-gray-700">
+    <li hidden={hidden} className="text-sm text-gray-700">
       <span className="font-medium capitalize text-gray-900">
         {formatQuestionType(question.question_type)}
       </span>

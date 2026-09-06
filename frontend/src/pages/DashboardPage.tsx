@@ -7,7 +7,7 @@ import JobDescriptionList from '../components/job-description/JobDescriptionList
 import ResumeList from '../components/resume/ResumeList';
 import ResumeUpload from '../components/resume/ResumeUpload';
 import {fetchInterviewSessions} from '../api/interviews';
-import {useAuth} from '../contexts/AuthContext';
+import {useAuth} from '../contexts/useAuth';
 
 export default function DashboardPage() {
   const {logout} = useAuth();

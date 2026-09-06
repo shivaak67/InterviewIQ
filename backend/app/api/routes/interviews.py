@@ -171,7 +171,7 @@ def reroll_interview(
     try:
         drafts = generate_interview_questions(
             resume_text=resume.extracted_text,
-            job_description_text=job_description.raw_text,
+            job_description_text=job_description.raw_text + "\nCandidate-reviewed role data: " + json.dumps(job_description.parsed_json or {}),
             previous_questions=previous_questions,
             difficulty=session.difficulty,
             interview_type=session.interview_type,
