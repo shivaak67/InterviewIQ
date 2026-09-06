@@ -14,7 +14,7 @@ export default function InterviewSessionPage() {
   });
 
   return (
-    <main className="mx-auto max-w-2xl p-8">
+    <main className="mx-auto max-w-4xl px-5 py-8 sm:px-8">
       <Link
         to="/dashboard"
         className="text-sm text-gray-600 underline hover:text-black"

@@ -32,10 +32,10 @@ export default function InterviewSessionCard({
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <p className="truncate font-medium text-gray-900">
-            {session.resume_filename || `Session #${session.id}`}
+            {session.job_description_preview || `Practice session #${session.id}`}
           </p>
           <p className="mt-1 line-clamp-2 text-sm text-gray-600">
-            {session.job_description_preview}
+            {session.resume_filename} · {(session.interview_type || "mixed").replaceAll("_", " ")}
           </p>
           <p className="mt-2 text-xs text-gray-500">
             {session.question_count} questions ·{" "}

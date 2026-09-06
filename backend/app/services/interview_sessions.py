@@ -34,6 +34,7 @@ def _answer_count(session: InterviewSession) -> int:
 
 
 def to_session_summary(session: InterviewSession) -> InterviewSessionSummaryResponse:
+    latest_attempt = max((a for q in session.questions for a in q.attempts), key=lambda a: a.id, default=None)
     return InterviewSessionSummaryResponse(
         id=session.id,
         user_id=session.user_id,
@@ -47,6 +48,7 @@ def to_session_summary(session: InterviewSession) -> InterviewSessionSummaryResp
         answer_count=_answer_count(session),
         practiced_count=sum(bool(q.attempts) for q in session.questions),
         attempt_count=sum(len(q.attempts) for q in session.questions),
+        next_step=latest_attempt.feedback_json.get("next_step", "") if latest_attempt else "",
         resume_filename=session.resume.original_filename,
         job_description_preview=_job_description_preview(
             (session.job_description.parsed_json or {}).get("title") or session.job_description.raw_text
