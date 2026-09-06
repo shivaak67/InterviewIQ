@@ -252,3 +252,26 @@ Full interactive docs: http://localhost:8000/docs
 
 **Shivaa Karthikgavaskar** — [GitHub](https://github.com/shivaak67)
 
+
+## Recovery email deployment
+
+Set FRONTEND_URL=https://www.prep-pilot.com on Render. Recovery is disabled until a sender is configured.
+
+For Render Free, use the HTTPS email provider integration:
+- RESEND_API_KEY: a sending key stored only in Render environment settings.
+- EMAIL_FROM: a sender on your verified domain, e.g. Prep Pilot <support@YOUR_VERIFIED_DOMAIN>.
+- Configure and verify the sender in Resend before enabling it. Do not use an unverified Gmail address with Resend.
+
+For a host that permits outbound SMTP:
+- SMTP_HOST=smtp.gmail.com
+- SMTP_PORT=587
+- SMTP_USERNAME=shivaakarthikgavaskar@gmail.com
+- EMAIL_FROM=shivaakarthikgavaskar@gmail.com
+- SMTP_PASSWORD: a Gmail app password stored only in Render environment settings; never the regular account password.
+
+Render Free blocks SMTP ports 25, 465 and 587: https://render.com/docs/free
+Email errors are logged without recipient addresses, tokens or credentials. The reset-request response deliberately does not reveal whether an account exists. Check delivery with a test mailbox after provider configuration.
+Database migrations run before the API starts. Confirm Render deploys the main branch using backend/Dockerfile.
+
+Local checks: backend/.venv/Scripts/python.exe -m unittest discover -s tests -v (from backend use .venv/Scripts/python.exe).
+For a synthetic browser fixture run `python -m tests.smoke_server` from backend and point VITE_API_URL to http://127.0.0.1:8017. The fixture only binds localhost and never loads production data.

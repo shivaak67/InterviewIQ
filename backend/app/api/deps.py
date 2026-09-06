@@ -33,7 +33,7 @@ def get_current_user(
         raise credentials_exception from exc
 
     user = db.query(User).filter(User.email == email).first()
-    if user is None:
+    if user is None or payload.get("auth_version", 0) != user.auth_version:
         raise credentials_exception
 
     return user

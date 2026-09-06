@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads/resumes"
     openai_api_key: str | None = None
     openai_model: str = "gpt-4o-mini"
+    frontend_url: str = "https://www.prep-pilot.com"
+    email_from: str = ""
+    resend_api_key: str | None = None
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: str = ""
     cors_origins: str = (
         "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173"
     )

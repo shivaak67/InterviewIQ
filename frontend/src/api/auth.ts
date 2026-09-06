@@ -20,6 +20,10 @@ export function getAuthHeaders(): HeadersInit {
 
 export async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
+    if (response.status === 401 && !response.url.endsWith("/auth/login")) {
+      clearStoredToken();
+      window.dispatchEvent(new Event("preppilot:session-expired"));
+    }
     const error = await response.json().catch(() => ({ detail: "Request failed" }));
     const message =
       typeof error.detail === "string"

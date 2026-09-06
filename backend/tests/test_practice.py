@@ -96,3 +96,38 @@ class PracticeTests(unittest.TestCase):
         self.assertEqual(old['questions'][0]['id'], self.question.id)
         invalid = self.client.post('/interviews/generate', json={'resume_id': self.resume.id, 'job_description_id': self.job.id, 'difficulty': 'unknown'})
         self.assertEqual(invalid.status_code, 422)
+
+    @patch('app.api.routes.recovery.send_reset_email')
+    @patch('app.api.routes.recovery.recovery_available', return_value=True)
+    def test_recovery_single_use_expiry_throttling_and_revocation(self, available, send):
+        from datetime import UTC, datetime, timedelta
+        from app.models.password_reset import PasswordReset
+        from app.core.security import create_access_token, verify_password
+        old_access = create_access_token(self.user.email)
+        known = self.client.post('/auth/forgot-password', json={'email': self.user.email})
+        unknown = self.client.post('/auth/forgot-password', json={'email': 'missing@example.com'})
+        self.assertEqual(known.status_code, 202)
+        self.assertEqual(known.json(), unknown.json())
+        token = send.call_args.args[1]
+        self.client.post('/auth/forgot-password', json={'email': self.user.email})
+        self.assertEqual(send.call_count, 1)
+        stored = self.db.query(PasswordReset).one()
+        self.assertNotEqual(stored.token_hash, token)
+        stored.expires_at = datetime.now(UTC) - timedelta(seconds=1); self.db.commit()
+        expired = self.client.post('/auth/reset-password', json={'token': token, 'password': 'ReplacementOnly123!'})
+        self.assertEqual(expired.status_code, 400)
+        stored.expires_at = datetime.now(UTC) + timedelta(minutes=15); self.db.commit()
+        reset = self.client.post('/auth/reset-password', json={'token': token, 'password': 'ReplacementOnly123!'})
+        self.assertEqual(reset.status_code, 200, reset.text)
+        self.assertTrue(verify_password('ReplacementOnly123!', self.user.hashed_password))
+        self.assertEqual(self.client.post('/auth/reset-password', json={'token': token, 'password': 'ReplacementOnly123!'}).status_code, 400)
+        app.dependency_overrides.pop(get_current_user)
+        self.assertEqual(self.client.get('/auth/me', headers={'Authorization': 'Bearer ' + old_access}).status_code, 401)
+        login = self.client.post('/auth/login', json={'email': self.user.email, 'password': 'ReplacementOnly123!'})
+        self.assertEqual(login.status_code, 200)
+        self.assertEqual(self.client.get('/auth/me', headers={'Authorization': 'Bearer ' + login.json()['access_token']}).status_code, 200)
+
+    @patch('app.api.routes.recovery.recovery_available', return_value=False)
+    def test_recovery_disabled_without_delivery_configuration(self, available):
+        self.assertFalse(self.client.get('/auth/recovery-status').json()['available'])
+        self.assertEqual(self.client.post('/auth/forgot-password', json={'email': self.user.email}).status_code, 503)
