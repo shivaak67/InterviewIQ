@@ -27,6 +27,7 @@ export type InterviewSession = {
 };
 
 export type InterviewSessionSummary = {
+  next_step?: string;
   id: number;
   user_id: number;
   resume_id: number;

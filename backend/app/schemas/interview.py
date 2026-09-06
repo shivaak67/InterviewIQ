@@ -46,6 +46,7 @@ class InterviewSessionSummaryResponse(BaseModel):
     answer_count: int = 0
     practiced_count: int = 0
     attempt_count: int = 0
+    next_step: str = ""
     resume_filename: str = ""
     job_description_preview: str = ""
 

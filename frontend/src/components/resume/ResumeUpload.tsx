@@ -89,7 +89,7 @@ export default function ResumeUpload() {
               type="file"
               accept=".pdf,application/pdf"
               onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
-              className="hidden"
+              className="sr-only"
             />
           </label>
 

@@ -57,7 +57,7 @@ export default function ResumeList() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => deleteMutation.mutate(resume.id)}
+                  onClick={() => { if (window.confirm("Remove this resume? Delete linked interview sessions first. This cannot be undone.")) deleteMutation.mutate(resume.id); }}
                   disabled={deleteMutation.isPending}
                   className="shrink-0 rounded border border-red-200 px-3 py-1 text-xs text-red-700 transition hover:bg-red-50 disabled:opacity-50"
                 >
