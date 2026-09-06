@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { rerollInterviewSession } from "../../api/interviews";
 import type { InterviewSession } from "../../types/interview";
 import QuestionWithAnswer from "./QuestionWithAnswer";
@@ -12,19 +13,20 @@ export default function InterviewSessionDetail({
   session,
 }: InterviewSessionDetailProps) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const rerollMutation = useMutation({
     mutationFn: () => rerollInterviewSession(session.id),
     onSuccess: (updatedSession) => {
-      queryClient.setQueryData(["interview-session", session.id], updatedSession);
+      queryClient.setQueryData(["interview-session", updatedSession.id], updatedSession);
       queryClient.invalidateQueries({ queryKey: ["interview-sessions"] });
-      queryClient.removeQueries({ queryKey: ["suggested-answer"] });
+      navigate(`/dashboard/sessions/${updatedSession.id}`);
     },
   });
 
   function handleReroll() {
     const confirmed = window.confirm(
-      "Generate a new set of questions for this session? Your current questions and suggested answers will be replaced.",
+      "Create another session with fresh questions? Your saved practice history will be kept. Save any unsaved drafts before continuing.",
     );
     if (!confirmed) {
       return;
@@ -37,6 +39,7 @@ export default function InterviewSessionDetail({
       <div className="rounded border border-gray-200 bg-gray-50 p-4">
         <p className="text-sm font-medium text-gray-900">{session.resume_filename}</p>
         <p className="mt-2 text-sm text-gray-600">{session.job_description_preview}</p>
+        <p className="mt-2 text-xs capitalize text-indigo-700">{session.difficulty || "intermediate"} · {(session.interview_type || "mixed").replaceAll("_", " ")}</p>
         <p className="mt-2 text-xs text-gray-500">
           Created {new Date(session.created_at).toLocaleString()}
         </p>
@@ -59,7 +62,7 @@ export default function InterviewSessionDetail({
           disabled={rerollMutation.isPending}
           className="rounded border border-gray-300 bg-white px-3 py-1.5 text-xs transition hover:bg-gray-50 disabled:opacity-50"
         >
-          {rerollMutation.isPending ? "Rerolling..." : "Reroll questions"}
+          {rerollMutation.isPending ? "Creating new session..." : "Practice fresh questions"}
         </button>
       </div>
 

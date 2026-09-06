@@ -15,6 +15,8 @@ QuestionType = Literal[
 class InterviewGenerateRequest(BaseModel):
     resume_id: int
     job_description_id: int
+    difficulty: Literal["beginner", "intermediate", "advanced"] = "intermediate"
+    interview_type: Literal["mixed", "technical", "behavioral", "project_specific", "system_design"] = "mixed"
 
 
 class GeneratedQuestionResponse(BaseModel):
@@ -37,6 +39,8 @@ class InterviewSessionSummaryResponse(BaseModel):
     resume_id: int
     job_description_id: int
     status: str
+    difficulty: str = "intermediate"
+    interview_type: str = "mixed"
     created_at: datetime
     question_count: int = 0
     answer_count: int = 0
@@ -54,6 +58,8 @@ class InterviewSessionResponse(BaseModel):
     resume_id: int
     job_description_id: int
     status: str
+    difficulty: str = "intermediate"
+    interview_type: str = "mixed"
     created_at: datetime
     question_count: int = 0
     answer_count: int = 0

@@ -14,6 +14,8 @@ export type InterviewSession = {
   resume_id: number;
   job_description_id: number;
   status: string;
+  difficulty?: string;
+  interview_type?: string;
   created_at: string;
   question_count: number;
   answer_count: number;
@@ -30,6 +32,8 @@ export type InterviewSessionSummary = {
   resume_id: number;
   job_description_id: number;
   status: string;
+  difficulty?: string;
+  interview_type?: string;
   created_at: string;
   question_count: number;
   answer_count: number;

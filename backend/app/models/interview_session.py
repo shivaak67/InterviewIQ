@@ -16,6 +16,8 @@ class InterviewSession(Base):
         ForeignKey("job_descriptions.id"), nullable=False, index=True
     )
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="completed")
+    difficulty: Mapped[str] = mapped_column(String(30), nullable=False, default="intermediate", server_default="intermediate")
+    interview_type: Mapped[str] = mapped_column(String(30), nullable=False, default="mixed", server_default="mixed")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
