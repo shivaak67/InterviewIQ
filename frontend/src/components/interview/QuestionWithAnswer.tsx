@@ -31,6 +31,8 @@ function SuggestedAnswerPanel({ questionId }: { questionId: number }) {
     mutationFn: () => generateSuggestedAnswer(questionId),
     onSuccess: (generated) => {
       queryClient.setQueryData(["suggested-answer", questionId], generated);
+      queryClient.invalidateQueries({ queryKey: ["interview-session"] });
+      queryClient.invalidateQueries({ queryKey: ["interview-sessions"] });
     },
   });
 
@@ -49,7 +51,7 @@ function SuggestedAnswerPanel({ questionId }: { questionId: number }) {
           disabled={generateMutation.isPending}
           className="rounded border border-gray-300 px-3 py-1 text-xs transition hover:bg-white disabled:opacity-50"
         >
-          {generateMutation.isPending ? "Generating answer..." : "Get suggested answer"}
+          {generateMutation.isPending ? "Building outline..." : "Get answer guidance"}
         </button>
         {generateMutation.isError && (
           <p className="mt-2 text-xs text-red-600">
@@ -63,9 +65,10 @@ function SuggestedAnswerPanel({ questionId }: { questionId: number }) {
   return (
     <div className="mt-3 rounded border border-gray-200 bg-white p-3">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-        Suggested answer
+        Answer guidance
       </p>
-      <p className="mt-2 text-sm text-gray-800">{answer.answer_text}</p>
+      <p className="mt-2 text-xs text-amber-800">Use only your real experience. Older saved examples may contain assumptions; verify every personal claim before using them.</p>
+      <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-gray-800">{answer.answer_text}</p>
 
       {hasStarBreakdown(answer) && (
         <dl className="mt-3 space-y-2 border-t border-gray-100 pt-3">
