@@ -131,3 +131,17 @@ class PracticeTests(unittest.TestCase):
     def test_recovery_disabled_without_delivery_configuration(self, available):
         self.assertFalse(self.client.get('/auth/recovery-status').json()['available'])
         self.assertEqual(self.client.post('/auth/forgot-password', json={'email': self.user.email}).status_code, 503)
+
+    @patch('app.api.routes.resumes.delete_resume_file')
+    def test_linked_material_deletion_is_blocked_before_file_removal(self, remove_file):
+        self.assertEqual(self.client.delete(f'/resumes/{self.resume.id}').status_code, 409)
+        self.assertEqual(self.client.delete(f'/job-descriptions/{self.job.id}').status_code, 409)
+        remove_file.assert_not_called()
+        self.assertEqual(self.client.get(f'/interviews/{self.session.id}').status_code, 200)
+
+    def test_job_corrections_are_owned_and_used_in_session_labels(self):
+        result = self.client.patch(f'/job-descriptions/{self.job.id}', json={'title': 'Sample Co — Frontend Intern', 'technologies': ['React', 'CSS', 'React'], 'required_skills': ['React'], 'preferred_skills': ['Playwright']})
+        self.assertEqual(result.status_code, 200, result.text)
+        self.assertEqual(result.json()['parsed_json']['technologies'], ['React', 'CSS'])
+        session = self.client.get(f'/interviews/{self.session.id}').json()
+        self.assertEqual(session['job_description_preview'], 'Sample Co — Frontend Intern')

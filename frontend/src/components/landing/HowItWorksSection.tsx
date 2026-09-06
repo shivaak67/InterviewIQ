@@ -16,8 +16,8 @@ const steps = [
   },
   {
     step: "4",
-    title: "Review suggested answers",
-    description: "Practice with model answers and STAR breakdowns for behavioral questions.",
+    title: "Answer, review, and retry",
+    description: "Submit your answer, get specific feedback, then practice a stronger attempt or follow-up.",
   },
 ];
 
@@ -27,7 +27,7 @@ export default function HowItWorksSection() {
       <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
         <h2 className="text-center text-2xl font-bold">How it works</h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-gray-600">
-          Four steps from upload to interview-ready.
+          Four steps to a focused practice routine.
         </p>
         <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((item) => (

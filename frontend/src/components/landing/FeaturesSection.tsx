@@ -10,14 +10,14 @@ const features = [
       "Paste a job description and practice against the skills and responsibilities it asks for.",
   },
   {
-    title: "Model answers with STAR",
+    title: "Guidance grounded in your experience",
     description:
-      "Get suggested answers for behavioral questions, structured with Situation, Task, Action, and Result.",
+      "Build your own answer from coaching outlines and resume excerpts. Fill in the details only you can verify.",
   },
   {
     title: "Session history",
     description:
-      "Track past interviews, see your answer progress, and pick up where you left off.",
+      "Save drafts, compare attempts, bookmark questions, and practice follow-ups based on your answers.",
   },
 ];
 
@@ -25,7 +25,7 @@ export default function FeaturesSection() {
   return (
     <section className="border-t border-gray-200 bg-white">
       <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
-        <h2 className="text-center text-2xl font-bold">Everything you need to prepare</h2>
+        <h2 className="text-center text-2xl font-bold">Practice with a purpose</h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-gray-600">
           Prep Pilot turns your background and target role into a focused practice plan.
         </p>

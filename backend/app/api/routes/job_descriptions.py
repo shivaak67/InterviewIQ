@@ -101,5 +101,7 @@ def delete_job_description(
             detail="Job description not found",
         )
 
+    if job_description.interview_sessions:
+        raise HTTPException(status_code=409, detail="Delete interview sessions using this role before removing it.")
     db.delete(job_description)
     db.commit()
