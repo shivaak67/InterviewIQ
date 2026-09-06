@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import {useState} from "react";
 import { rerollInterviewSession } from "../../api/interviews";
 import type { InterviewSession } from "../../types/interview";
 import QuestionWithAnswer from "./QuestionWithAnswer";
@@ -14,6 +15,10 @@ export default function InterviewSessionDetail({
 }: InterviewSessionDetailProps) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [activeId, setActiveId] = useState(session.questions[0]?.id);
+  const [bookmarksOnly, setBookmarksOnly] = useState(false);
+  const visibleQuestions = session.questions.filter(q => !bookmarksOnly || q.bookmarked);
+  const active = visibleQuestions.find(q => q.id === activeId) || visibleQuestions[0];
 
   const rerollMutation = useMutation({
     mutationFn: () => rerollInterviewSession(session.id),
@@ -74,9 +79,15 @@ export default function InterviewSessionDetail({
         </p>
       )}
 
-      <ol className="mt-4 list-decimal space-y-10 pl-5">
+      <div className="mt-5 flex flex-wrap items-center gap-2" aria-label="Question navigation">
+        {visibleQuestions.map(q => <button key={q.id} type="button" aria-label={`Question ${q.order_index + 1}${q.bookmarked ? ', bookmarked' : ''}`} aria-pressed={active?.id === q.id} onClick={() => setActiveId(q.id)} className={`size-10 rounded-lg border text-sm font-medium ${active?.id === q.id ? 'border-indigo-700 bg-indigo-700 text-white' : 'border-gray-200 bg-white text-gray-700'}`}>{q.order_index + 1}{q.bookmarked ? ' ★' : ''}</button>)}
+        <label className="ml-2 flex items-center gap-2 text-xs"><input type="checkbox" checked={bookmarksOnly} onChange={e => setBookmarksOnly(e.target.checked)} />Bookmarked only</label>
+      </div>
+      {!active && <p className="mt-5 text-sm text-gray-600">No bookmarked questions yet. Turn off the filter, bookmark a question, and save its draft.</p>}
+      {active && <p className="mt-5 text-xs font-medium uppercase tracking-widest text-indigo-700">Question {active.order_index + 1} of {session.question_count}</p>}
+      <ol className="mt-3 list-none">
         {session.questions.map((question) => (
-          <QuestionWithAnswer key={question.id} question={question} />
+          <QuestionWithAnswer key={question.id} question={question} hidden={question.id !== active?.id} />
         ))}
       </ol>
     </div>

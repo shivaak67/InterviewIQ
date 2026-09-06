@@ -60,6 +60,14 @@ class PracticeTests(unittest.TestCase):
         self.assertEqual(session['attempt_count'], 3)
         self.assertEqual(session['answer_count'], 0)
         self.assertTrue(session['questions'][0]['bookmarked'])
+        self.assertEqual(session['questions'][0]['draft_follow_up_from'], first.json()['id'])
+        saved = self.client.patch(endpoint + '/practice', json={'draft_text': 'A follow-up draft to resume later.', 'follow_up_from': first.json()['id'], 'bookmarked': True})
+        self.assertEqual(saved.status_code, 200)
+        self.db.expire_all()
+        restored = self.client.get(f'/interviews/{self.session.id}').json()['questions'][0]
+        self.assertEqual(restored['draft_follow_up_from'], first.json()['id'])
+        self.assertEqual(restored['draft_text'], 'A follow-up draft to resume later.')
+        self.assertEqual(self.client.patch(endpoint + '/practice', json={'draft_text': 'Invalid parent', 'follow_up_from': 999}).status_code, 404)
 
     def test_ownership_and_input_validation(self):
         other = user.User(email='other@example.com', hashed_password='unused')

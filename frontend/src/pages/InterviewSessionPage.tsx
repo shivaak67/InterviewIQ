@@ -32,7 +32,7 @@ export default function InterviewSessionPage() {
         <p className="mt-4 text-sm text-red-600">Could not load this session.</p>
       ) : (
         <div className="mt-6">
-          <InterviewSessionDetail session={data} />
+          <InterviewSessionDetail key={data.id} session={data} />
         </div>
       )}
     </main>

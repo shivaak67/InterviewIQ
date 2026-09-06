@@ -9,6 +9,7 @@ class PracticeSubmission(BaseModel):
 class PracticeDraft(BaseModel):
     draft_text: str = Field(default='', max_length=12000)
     bookmarked: bool = False
+    follow_up_from: int | None = None
 
 class Feedback(BaseModel):
     relevance: int = Field(ge=1, le=5)

@@ -54,12 +54,16 @@ def forgot_password(payload: RecoveryRequest, tasks: BackgroundTasks, db: Sessio
 @router.post('/reset-password')
 def reset_password(payload: ResetRequest, db: Session = Depends(get_db)):
     token_hash = hashlib.sha256(payload.token.encode()).hexdigest()
-    # Lock the token and account so concurrent requests cannot reuse the link.
+    # Use the same account-then-token lock order as recovery requests.
+    reset = db.query(PasswordReset).filter(PasswordReset.token_hash == token_hash,
+        PasswordReset.expires_at > datetime.now(UTC)).first()
+    if reset is None:
+        raise HTTPException(status_code=400, detail='This reset link is invalid or expired. Request another link.')
+    user = db.query(User).filter(User.id == reset.user_id).with_for_update().one()
     reset = db.query(PasswordReset).filter(PasswordReset.token_hash == token_hash,
         PasswordReset.expires_at > datetime.now(UTC)).with_for_update().first()
     if reset is None:
         raise HTTPException(status_code=400, detail='This reset link is invalid or expired. Request another link.')
-    user = db.query(User).filter(User.id == reset.user_id).with_for_update().one()
     user.hashed_password = hash_password(payload.password)
     user.auth_version += 1
     db.query(PasswordReset).filter(PasswordReset.user_id == user.id).delete()

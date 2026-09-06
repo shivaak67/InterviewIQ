@@ -28,6 +28,7 @@ class GeneratedQuestionResponse(BaseModel):
     question_text: str
     order_index: int
     draft_text: str = ""
+    draft_follow_up_from: int | None = None
     bookmarked: bool = False
 
 

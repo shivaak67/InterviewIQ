@@ -1,5 +1,5 @@
 import {Link} from 'react-router-dom';
-import {useAuth} from '../../contexts/AuthContext';
+import {useAuth} from '../../contexts/useAuth';
 export default function HeroSection() {
   const {user} = useAuth();
   return <section className="bg-slate-50"><div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 sm:py-24 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">

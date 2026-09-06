@@ -8,6 +8,6 @@ export async function fetchAttempts(id: number): Promise<Attempt[]> {
 export async function submitAttempt(id: number, answer_text: string, follow_up_from?: number): Promise<Attempt> {
   return handleResponse(await fetch(`${API_URL}/answers/${id}/attempts`, {method: 'POST', headers: {...getAuthHeaders(), 'Content-Type': 'application/json'}, body: JSON.stringify({answer_text, follow_up_from})}));
 }
-export async function saveDraft(id: number, draft_text: string, bookmarked: boolean) {
-  return handleResponse(await fetch(`${API_URL}/answers/${id}/practice`, {method: 'PATCH', headers: {...getAuthHeaders(), 'Content-Type': 'application/json'}, body: JSON.stringify({draft_text, bookmarked})}));
+export async function saveDraft(id: number, draft_text: string, bookmarked: boolean, follow_up_from?: number) {
+  return handleResponse(await fetch(`${API_URL}/answers/${id}/practice`, {method: 'PATCH', headers: {...getAuthHeaders(), 'Content-Type': 'application/json'}, body: JSON.stringify({draft_text, bookmarked, follow_up_from})}));
 }
