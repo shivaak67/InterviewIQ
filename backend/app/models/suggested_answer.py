@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Text, func
+from sqlalchemy import DateTime, ForeignKey, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -8,6 +8,7 @@ from app.core.database import Base
 
 class SuggestedAnswer(Base):
     __tablename__ = "suggested_answers"
+    __table_args__ = (UniqueConstraint("question_id", name="suggested_answers_question_id_key"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     question_id: Mapped[int] = mapped_column(

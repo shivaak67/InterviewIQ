@@ -114,3 +114,51 @@ def get_answer(
         )
 
     return question.suggested_answer
+
+# Each endpoint resolves the question through its owning user's session.
+from app.models.practice_attempt import PracticeAttempt
+from app.schemas.practice import PracticeSubmission, PracticeDraft, PracticeAttemptResponse
+from app.services.practice_feedback import evaluate_attempt
+
+
+@router.get('/{question_id}/attempts', response_model=list[PracticeAttemptResponse])
+def list_attempts(question_id: int, current_user: User = Depends(get_current_user),
+                  db: Session = Depends(get_db)):
+    question = _get_user_question(question_id, current_user.id, db)
+    return question.attempts
+
+
+@router.patch('/{question_id}/practice', response_model=PracticeDraft)
+def save_practice_draft(question_id: int, payload: PracticeDraft,
+                        current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    question = _get_user_question(question_id, current_user.id, db)
+    question.draft_text = payload.draft_text
+    question.bookmarked = payload.bookmarked
+    db.commit()
+    return payload
+
+
+@router.post('/{question_id}/attempts', response_model=PracticeAttemptResponse, status_code=201)
+def submit_attempt(question_id: int, payload: PracticeSubmission,
+                   current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    question = _get_user_question(question_id, current_user.id, db)
+    prompt = question.question_text
+    if payload.follow_up_from is not None:
+        parent = next((a for a in question.attempts if a.id == payload.follow_up_from), None)
+        if parent is None:
+            raise HTTPException(status_code=404, detail='Previous attempt not found')
+        prompt = parent.feedback_json['follow_up']
+    previous = next((a for a in reversed(question.attempts) if a.prompt_text == prompt), None)
+    try:
+        feedback = evaluate_attempt(prompt, payload.answer_text, question.question_type,
+                                    question.session.resume.extracted_text or '',
+                                    previous.answer_text if previous else None)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail='Feedback could not be generated. Your draft is still available; please retry.') from exc
+    attempt = PracticeAttempt(question=question, answer_text=payload.answer_text,
+                               prompt_text=prompt, feedback_json=feedback.model_dump())
+    db.add(attempt)
+    question.draft_text = payload.answer_text
+    db.commit()
+    db.refresh(attempt)
+    return attempt

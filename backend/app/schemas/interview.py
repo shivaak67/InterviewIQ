@@ -25,6 +25,8 @@ class GeneratedQuestionResponse(BaseModel):
     question_type: str
     question_text: str
     order_index: int
+    draft_text: str = ""
+    bookmarked: bool = False
 
 
 class InterviewSessionSummaryResponse(BaseModel):
@@ -38,6 +40,8 @@ class InterviewSessionSummaryResponse(BaseModel):
     created_at: datetime
     question_count: int = 0
     answer_count: int = 0
+    practiced_count: int = 0
+    attempt_count: int = 0
     resume_filename: str = ""
     job_description_preview: str = ""
 
@@ -53,6 +57,8 @@ class InterviewSessionResponse(BaseModel):
     created_at: datetime
     question_count: int = 0
     answer_count: int = 0
+    practiced_count: int = 0
+    attempt_count: int = 0
     resume_filename: str = ""
     job_description_preview: str = ""
     questions: list[GeneratedQuestionResponse] = Field(default_factory=list)

@@ -45,6 +45,7 @@ export default function InterviewSessionCard({
             <SessionProgress
               answerCount={session.answer_count}
               questionCount={session.question_count}
+              practicedCount={session.practiced_count}
             />
           </div>
         </div>

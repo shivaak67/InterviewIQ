@@ -4,6 +4,8 @@ export type GeneratedQuestion = {
   question_type: string;
   question_text: string;
   order_index: number;
+  draft_text?: string;
+  bookmarked?: boolean;
 };
 
 export type InterviewSession = {
@@ -15,6 +17,8 @@ export type InterviewSession = {
   created_at: string;
   question_count: number;
   answer_count: number;
+  practiced_count?: number;
+  attempt_count?: number;
   resume_filename: string;
   job_description_preview: string;
   questions: GeneratedQuestion[];
@@ -29,6 +33,8 @@ export type InterviewSessionSummary = {
   created_at: string;
   question_count: number;
   answer_count: number;
+  practiced_count?: number;
+  attempt_count?: number;
   resume_filename: string;
   job_description_preview: string;
 };
