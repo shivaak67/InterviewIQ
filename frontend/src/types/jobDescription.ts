@@ -1,4 +1,7 @@
 export type ParsedJobData = {
+  title?: string;
+  required_skills?: string[];
+  preferred_skills?: string[];
   skills: string[];
   technologies: string[];
   responsibilities: string[];

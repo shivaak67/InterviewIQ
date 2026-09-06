@@ -1,159 +1,52 @@
 import re
-
 from app.schemas.job_description import ParsedJobData
 
-TECHNOLOGY_KEYWORDS = [
-    "Python",
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "Node.js",
-    "FastAPI",
-    "PostgreSQL",
-    "AWS",
-    "Docker",
-    "Kubernetes",
-    "Java",
-    "C++",
-    "Go",
-    "SQL",
-    "MongoDB",
-    "Redis",
-    "Git",
-    "REST",
-    "GraphQL",
-    "Vue",
-    "Angular",
-    "Tailwind",
-    "Django",
-    "Flask",
-    "Spring",
-    "Kotlin",
-    "Swift",
-    "Rust",
-    "Azure",
-    "GCP",
-    "Linux",
-    "CI/CD",
-    "Terraform",
-    "Kafka",
-    "Spark",
-    "TensorFlow",
-    "PyTorch",
-]
-
-SKILL_KEYWORDS = [
-    "communication",
-    "leadership",
-    "problem solving",
-    "teamwork",
-    "collaboration",
-    "agile",
-    "scrum",
-    "debugging",
-    "testing",
-    "system design",
-    "data structures",
-    "algorithms",
-    "project management",
-    "mentoring",
-]
-
-STOPWORDS = {
-    "the",
-    "and",
-    "for",
-    "with",
-    "that",
-    "this",
-    "from",
-    "your",
-    "will",
-    "have",
-    "are",
-    "our",
-    "you",
-    "able",
-    "using",
-    "work",
-    "role",
-    "team",
-    "experience",
-    "skills",
-    "required",
-    "preferred",
-    "including",
-    "about",
-    "their",
-    "such",
-    "into",
-    "other",
-    "than",
-    "when",
-    "what",
-    "where",
-    "which",
-    "while",
-    "would",
-    "should",
-    "could",
-    "been",
-    "being",
-    "also",
-    "more",
-    "most",
-    "some",
-    "than",
-    "them",
-    "they",
-    "these",
-    "those",
+TECHNOLOGIES = {
+    name: [name] for name in ['Python', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Node.js',
+    'FastAPI', 'PostgreSQL', 'AWS', 'Docker', 'Kubernetes', 'Java', 'C++', 'C#', 'SQL', 'MongoDB',
+    'Redis', 'Git', 'REST', 'GraphQL', 'Vue', 'Angular', 'Tailwind', 'Django', 'Flask', 'Spring',
+    'Kotlin', 'Swift', 'Rust', 'Azure', 'GCP', 'Linux', 'CI/CD', 'Terraform', 'Kafka', 'Spark',
+    'TensorFlow', 'PyTorch', 'HTML', 'CSS', 'Playwright', 'Jest', 'Vitest', 'Cypress']
 }
+TECHNOLOGIES.update({'Go': ['Golang', 'Go'], 'Node.js': ['Node.js', 'NodeJS'],
+                     'PostgreSQL': ['PostgreSQL', 'Postgres'], 'Next.js': ['Next.js', 'NextJS']})
+SKILLS = ['communication', 'leadership', 'problem solving', 'teamwork', 'collaboration',
+          'agile', 'scrum', 'debugging', 'testing', 'system design', 'data structures',
+          'algorithms', 'project management', 'mentoring', 'accessibility', 'performance']
+
+
+def _contains(text: str, term: str) -> bool:
+    # Token boundaries also work for punctuation-heavy names such as C++ and Node.js.
+    return bool(re.search(r'(?<![\w])' + re.escape(term) + r'(?![\w+#])', text, re.I))
 
 
 def parse_job_description(raw_text: str) -> ParsedJobData:
-    text_lower = raw_text.lower()
-
-    technologies = [
-        tech for tech in TECHNOLOGY_KEYWORDS if tech.lower() in text_lower
-    ]
-
-    skills = [skill.title() for skill in SKILL_KEYWORDS if skill in text_lower]
-
-    responsibilities: list[str] = []
-    for line in raw_text.splitlines():
-        stripped = line.strip()
-        if not stripped:
+    technologies = [name for name, aliases in TECHNOLOGIES.items()
+                    if any(_contains(raw_text, alias) for alias in aliases)]
+    # Avoid matching the everyday verb "go" unless language context supports it.
+    if 'Go' in technologies and not re.search(r'\bGolang\b|\bGo\b(?=\s*(?:[,/]|and\b|development|programming|engineer))', raw_text):
+        technologies.remove('Go')
+    skills = [skill.title() for skill in SKILLS if _contains(raw_text, skill)]
+    responsibilities, required, preferred = [], [], []
+    section = 'other'
+    for part in re.split(r'\n|(?<=[.!?])\s+', raw_text):
+        cleaned = re.sub(r'^\s*(?:[-•*]|\d+[.)])\s*', '', part).strip()
+        if not cleaned:
             continue
-        if re.match(r"^[-•*]\s+", stripped) or re.match(r"^\d+[.)]\s+", stripped):
-            cleaned = re.sub(r"^[-•*]\s+", "", stripped)
-            cleaned = re.sub(r"^\d+[.)]\s+", "", cleaned).strip()
-            if len(cleaned) >= 10:
-                responsibilities.append(cleaned)
-
-    words = re.findall(r"[A-Za-z][A-Za-z0-9+#./-]{2,}", raw_text)
-    keyword_candidates: list[str] = []
-    seen: set[str] = set()
-    for word in words:
-        normalized = word.lower()
-        if normalized in STOPWORDS or normalized in seen:
-            continue
-        if len(normalized) < 4:
-            continue
-        seen.add(normalized)
-        keyword_candidates.append(word if word.isupper() else word.capitalize())
-
-    tech_lower = {t.lower() for t in technologies}
-    skill_lower = {s.lower() for s in skills}
-    keywords = [
-        word
-        for word in keyword_candidates
-        if word.lower() not in tech_lower and word.lower() not in skill_lower
-    ][:20]
-
-    return ParsedJobData(
-        skills=skills,
-        technologies=technologies,
-        responsibilities=responsibilities[:15],
-        keywords=keywords,
-    )
+        if re.search(r'^(required|requirements|qualifications|must have|what we.re looking for)\b', cleaned, re.I):
+            section = 'required'
+        elif re.search(r'^(preferred|bonus|nice to have)\b', cleaned, re.I):
+            section = 'preferred'
+        elif re.search(r'^(responsibilities|what you.ll do|about|benefits)\b', cleaned, re.I):
+            section = 'other'
+        found = [tech for tech in technologies if any(_contains(cleaned, alias) for alias in TECHNOLOGIES[tech])]
+        if section == 'required':
+            required.extend(found)
+        elif section == 'preferred':
+            preferred.extend(found)
+        if re.match(r'^(build|develop|design|write|maintain|implement|collaborate|debug|test|own|lead|integrate|deliver|monitor)\b', cleaned, re.I):
+            responsibilities.append(cleaned)
+    return ParsedJobData(technologies=technologies, skills=skills, keywords=[],
+                         required_skills=list(dict.fromkeys(required)),
+                         preferred_skills=list(dict.fromkeys(preferred)),
+                         responsibilities=responsibilities[:15])
