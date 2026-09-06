@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -67,7 +68,9 @@ def generate_interview(
     try:
         drafts = generate_interview_questions(
             resume_text=resume.extracted_text,
-            job_description_text=job_description.raw_text,
+            job_description_text=job_description.raw_text + "\nCandidate-reviewed role data: " + json.dumps(job_description.parsed_json or {}),
+            difficulty=payload.difficulty,
+            interview_type=payload.interview_type,
         )
     except ValueError as exc:
         raise HTTPException(
@@ -85,6 +88,8 @@ def generate_interview(
         resume_id=resume.id,
         job_description_id=job_description.id,
         status="completed",
+        difficulty=payload.difficulty,
+        interview_type=payload.interview_type,
     )
     db.add(session)
     db.flush()
@@ -162,15 +167,14 @@ def reroll_interview(
         )
 
     previous_questions = [question.question_text for question in session.questions]
-    for question in list(session.questions):
-        db.delete(question)
-    db.flush()
 
     try:
         drafts = generate_interview_questions(
             resume_text=resume.extracted_text,
             job_description_text=job_description.raw_text,
             previous_questions=previous_questions,
+            difficulty=session.difficulty,
+            interview_type=session.interview_type,
         )
     except ValueError as exc:
         raise HTTPException(
@@ -183,10 +187,16 @@ def reroll_interview(
             detail="Failed to reroll interview questions",
         ) from exc
 
+    # A reroll creates another session, retaining earlier answers and practice history.
+    new_session = InterviewSession(user_id=current_user.id, resume_id=resume.id,
+        job_description_id=job_description.id, status="completed",
+        difficulty=session.difficulty, interview_type=session.interview_type)
+    db.add(new_session)
+    db.flush()
     for index, draft in enumerate(drafts):
         db.add(
             GeneratedQuestion(
-                session_id=session.id,
+                session_id=new_session.id,
                 question_type=draft.question_type,
                 question_text=draft.question_text,
                 order_index=index,
@@ -195,7 +205,7 @@ def reroll_interview(
 
     db.commit()
 
-    loaded_session = load_user_session(db, session.id, current_user.id)
+    loaded_session = load_user_session(db, new_session.id, current_user.id)
     if loaded_session is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

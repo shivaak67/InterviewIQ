@@ -80,3 +80,19 @@ class PracticeTests(unittest.TestCase):
         self.assertEqual(self.db.get(generated_question.GeneratedQuestion, self.question.id).draft_text, 'My saved practice answer.')
         self.assertEqual(self.client.get(endpoint + '/attempts').json(), [])
 
+
+    @patch('app.api.routes.interviews.generate_interview_questions')
+    def test_generation_settings_and_reroll_preserve_existing_session(self, generate):
+        from app.services.interview_generator import GeneratedQuestionDraft
+        generate.return_value = [GeneratedQuestionDraft(question_type='technical', question_text=f'Explain debugging scenario {i} in detail.') for i in range(8)]
+        created = self.client.post('/interviews/generate', json={'resume_id': self.resume.id, 'job_description_id': self.job.id, 'difficulty': 'beginner', 'interview_type': 'technical'})
+        self.assertEqual(created.status_code, 201, created.text)
+        self.assertEqual(created.json()['difficulty'], 'beginner')
+        self.assertEqual(generate.call_args.kwargs['interview_type'], 'technical')
+        rerolled = self.client.post(f'/interviews/{self.session.id}/reroll')
+        self.assertEqual(rerolled.status_code, 200, rerolled.text)
+        self.assertNotEqual(rerolled.json()['id'], self.session.id)
+        old = self.client.get(f'/interviews/{self.session.id}').json()
+        self.assertEqual(old['questions'][0]['id'], self.question.id)
+        invalid = self.client.post('/interviews/generate', json={'resume_id': self.resume.id, 'job_description_id': self.job.id, 'difficulty': 'unknown'})
+        self.assertEqual(invalid.status_code, 422)

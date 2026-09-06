@@ -6,6 +6,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 export async function generateInterview(
   resumeId: number,
   jobDescriptionId: number,
+  difficulty = "intermediate",
+  interviewType = "mixed",
 ): Promise<InterviewSession> {
   const response = await fetch(`${API_URL}/interviews/generate`, {
     method: "POST",
@@ -16,6 +18,8 @@ export async function generateInterview(
     body: JSON.stringify({
       resume_id: resumeId,
       job_description_id: jobDescriptionId,
+      difficulty,
+      interview_type: interviewType,
     }),
   });
 
